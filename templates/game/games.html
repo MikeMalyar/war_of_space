@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available games</title>
+</head>
+<body>
+    <h3>Available games</h3>
+
+    <ul>
+    {% for game in games %}
+        <li><a href="/games/{{ game.id }}">{{ game }}</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

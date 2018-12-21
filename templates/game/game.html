@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ game.title }}</title>
+</head>
+<body>
+    <h3>Players</h3>
+    <ul>
+        {% for player in game.players.all %}
+            {{ player }} <br>
+        {% endfor %}
+    </ul>
+
+    <form>
+        <input type="button" value="Join">
+    </form>
+</body>
+</html>

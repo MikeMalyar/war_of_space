@@ -6,14 +6,13 @@
 </head>
 <body>
 
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Login" required autofocus>
+        <input type="password" name="password" placeholder="Password" required>
 
-            <form method="post">
-                {% csrf_token %}
-                <input type="text" name="username" placeholder="Login" required autofocus>
-                <input type="password" name="password" placeholder="Password" required>
-
-                <button type="submit">Sign in</button>
-            </form><!-- /form -->
+        <button type="submit">Sign in</button>
+    </form>
 
 </body>
 </html>
