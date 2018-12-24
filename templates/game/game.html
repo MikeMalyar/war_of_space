@@ -12,8 +12,24 @@
         {% endfor %}
     </ul>
 
-    <form>
-        <input type="button" value="Join">
+    <form action="{% url 'join' game.id %}" method="post">
+        {% csrf_token %}
+
+        {% if game.players.get_queryset.count < game.quantity %}
+            <input type="submit" value="Join">
+        {% else %}
+            <input type="submit" value="Join" disabled>
+        {% endif %}
+    </form>
+
+    <form action="{% url 'start' game.id %}" method="post">
+        {% csrf_token %}
+
+        {% if game.players.first == player and game.players.get_queryset.count == game.quantity %}
+            <input type="submit" value="Start game">
+        {% else %}
+            <input type="submit" value="Start game" disabled>
+        {% endif %}
     </form>
 </body>
 </html>

@@ -12,7 +12,11 @@ class Player(models.Model):
 class Game(models.Model):
     players = models.ManyToManyField(Player)
     title = models.CharField(max_length=40, default="The game")
+    quantity = models.IntegerField(default=4)
+    started = models.BooleanField(default=False)
 
     def __str__(self):
-        return '"' + self.title + '"' + " Creator " + self.players.first().__str__()
+        size = self.players.get_queryset().count()
+        str1 = " Players " + size.__str__() + "/" + self.quantity.__str__()
+        return '"' + self.title + '"' + " Creator " + self.players.first().__str__() + str1
 

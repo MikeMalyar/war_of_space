@@ -5,8 +5,9 @@
     <title>Title</title>
 </head>
 <body>
-{{ player }} <br><br>
+    {{ player }} <br><br>
 
-<a href="{% url 'games' %}">Join game</a>
+    <a href="{% url 'add' %}">Create game</a> <br>
+    <a href="{% url 'games' %}">Join game</a> <br>
 </body>
 </html>
