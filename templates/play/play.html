@@ -1,4 +1,4 @@
-{% load static %}
+{% load staticfiles %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +10,12 @@
     <script type="text/javascript">
         function f()
         {
+            var ships = [];
+            {% for ship in game.ships.all %}
+                var s = new Ship({{ ship.image }}, {{ ship.speed }}, {{ ship.angle }}, {{ ship.x }}, {{ ship.y }});
+                ships.push(s);
+            {% endfor %}
+            console.log("Ships" + ships.toString());
             init();
         }
     </script>

@@ -2,6 +2,15 @@ let canvas = document.getElementById("myCanvas");
 let ctx = canvas.getContext("2d");
 let x=0, y=0, w=20, h=20;
 
+function Ship(image, speed, angle, x, y)
+{
+    this.image = image;
+    this.speed = speed;
+    this.angle = angle;
+    this.x = x;
+    this.y = y;
+}
+
 function init() {
     console.log("hello");
 }

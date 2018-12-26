@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Ship(models.Model):
-    image = models.ImageField(upload_to="static/images/")
+    image = models.ImageField(upload_to="media/")
     speed = models.IntegerField(default=1)
     angle = models.IntegerField(default=1)
     isgameship = models.BooleanField(default=False)
