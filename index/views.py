@@ -2,11 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import Player, Game
+from .models import Player, Game, GameShip, Ship
 
 
 def index(request):
-    return render(request, 'index.html', {'hello': 'hello'})
+    return render(request, 'index.html', {})
 
 
 def profile(request):
@@ -58,11 +58,20 @@ def start(request, game_id):
     this_game = Game.objects.get(id=game_id)
 
     this_game.started = True
+    for player in this_game.players.get_queryset():
+
+        ship = player.ships.get_queryset().first()
+
+        gameship = GameShip.objects.create(image=ship.image, speed=ship.speed, angle=ship.angle, isgameship=True)
+        this_game.ships.add(gameship)
+
     this_game.save()
     return HttpResponseRedirect(reverse('play', args=(game_id,)))
 
 
 def play(request, game_id):
-    return render(request, 'test_war.html', {})
+    this_game = Game.objects.get(id=game_id)
+    player = this_game.players.get(user=request.user)
+    return render(request, 'play/play.html', {'game': this_game, 'player': player})
 
 

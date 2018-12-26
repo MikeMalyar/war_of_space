@@ -1,10 +1,12 @@
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
-var x=0, y=0, w=20, h=20;
+let canvas = document.getElementById("myCanvas");
+let ctx = canvas.getContext("2d");
+let x=0, y=0, w=20, h=20;
 
-function draw(){
+function init() {
+    console.log("hello");
+}
 
-    // clear canvas
+function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#FF0000";
     ctx.fillRect(x, y, w, h);
@@ -27,6 +29,5 @@ document.addEventListener('keypress',
                 break;
             }
         draw();
-        // console.log(event.key);
     }
 );
