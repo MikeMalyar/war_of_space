@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,12 +11,22 @@
         function f()
         {
             var ships = [];
+
             {% for ship in game.ships.all %}
-                var s = new Ship({{ ship.image }}, {{ ship.speed }}, {{ ship.angle }}, {{ ship.x }}, {{ ship.y }});
+                var url = '{{ ship.image.url }}';
+                var image = document.createElement("IMG");
+                image.src = url;
+                var x = '{{ ship.x }}', y = '{{ ship.y }}';
+                var speed = '{{ ship.speed }}', angle = '{{ ship.angle }}';
+                var racing = '{{ ship.racing }}', rotate = '{{ ship.rotate }}';
+
+                var s = new Ship(image, parseFloat(racing), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y));
                 ships.push(s);
             {% endfor %}
-            console.log("Ships" + ships.toString());
-            init();
+
+            var index = 0;
+
+            init(ships, index);
         }
     </script>
 
@@ -27,7 +37,7 @@
     {{ player }} <br>
     {{ player.ships.first }} <br>
 
-    <canvas id="myCanvas"  width="200" height="100" style="border:1px solid #d3d3d3;">
+    <canvas id="myCanvas" width="1300" height="550" style="border:1px solid #d3d3d3; width:100%;height:50%">
 
     </canvas>
 

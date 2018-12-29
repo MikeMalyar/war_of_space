@@ -12,4 +12,4 @@ urlpatterns = [
     path('games/<int:game_id>/start', start, name='start'),
     path('addgame/', add, name='add'),
     path('play/<int:game_id>', play, name='play'),
-] + static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -62,7 +62,7 @@ def start(request, game_id):
 
         ship = player.ships.get_queryset().first()
 
-        gameship = GameShip.objects.create(image=ship.image, speed=ship.speed, angle=ship.angle, isgameship=True)
+        gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, isgameship=True)
         this_game.ships.add(gameship)
 
     this_game.save()

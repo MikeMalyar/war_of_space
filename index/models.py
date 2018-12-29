@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 
 
 class Ship(models.Model):
-    image = models.ImageField(upload_to="media/")
-    speed = models.IntegerField(default=1)
-    angle = models.IntegerField(default=1)
+    image = models.ImageField(null=True)
+    racing = models.FloatField(default=1)       #Racing in pixels per second
+    rotate = models.FloatField(default=1)       #Rotation in degrees per second
     isgameship = models.BooleanField(default=False)
 
 
@@ -18,8 +18,10 @@ class Player(models.Model):
 
 
 class GameShip(Ship):
-    x = models.IntegerField(default=0)
-    y = models.IntegerField(default=0)
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+    angle = models.FloatField(default=0)
+    speed = models.FloatField(default=0)    #Speed in pixels per second
 
 
 class Game(models.Model):
