@@ -9,8 +9,9 @@ var game_id = 0;
 
 var flag = true;
 
-function Ship(image, racing, speed, rotate, angle, x, y)
+function Ship(id, image, racing, speed, rotate, angle, x, y)
 {
+    this.id = id;
     this.image = image;
     this.speed = speed;
     this.angle = angle;
@@ -41,6 +42,7 @@ function init(list, index, game)
         if (flag)
         {
             ships[player].move();
+            change(player);
             draw();
             setTimeout(run, interval);
         }
@@ -87,43 +89,46 @@ document.addEventListener('keydown',
         switch (event.keyCode) {
             case 87:
                 ships[player].speed += ships[player].racing * interval / 1000.0;
+                change(player);
                 break;
             case 68:
                 ships[player].angle += ships[player].rotate * interval / 1000.0;
+                change(player);
                 break;
             case 83:
                 ships[player].speed -= ships[player].racing * interval / 1000.0;
+                change(player);
                 break;
             case 65:
                 ships[player].angle -= ships[player].rotate * interval / 1000.0;
+                change(player);
                 break;
             case 8:
                 flag = false;
                 break;
         }
 
-        $.ajax({
+        draw();
+    }
+);
+
+function change(index)
+{
+    $.ajax({
             url: '/ajax/change/',
             data: {
                 'game_id': game_id,
-                'ship': player,
-                'speed': ships[player].speed,
-                'angle': ships[player].angle,
-                'rotate': ships[player].rotate,
-                'racing': ships[player].racing,
-                'x': ships[player].x,
-                'y': ships[player].y,
+                'ship_id': ships[index].id,
+                'speed': ships[index].speed,
+                'angle': ships[index].angle,
+                'rotate': ships[index].rotate,
+                'racing': ships[index].racing,
+                'x': ships[index].x,
+                'y': ships[index].y,
             },
             dataType: 'json',
             success: function(data){
                 console.log(data.flag);
             }
         });
-
-        draw();
-    }
-);
-
-$(document).keypress(function(){
-
-});
+}

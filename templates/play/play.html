@@ -13,6 +13,7 @@
             var ships = [];
 
             {% for ship in game.ships.all %}
+                var id = '{{ ship.id }}';
                 var url = '{{ ship.image.url }}';
                 var image = document.createElement("IMG");
                 image.src = url;
@@ -20,7 +21,7 @@
                 var speed = '{{ ship.speed }}', angle = '{{ ship.angle }}';
                 var racing = '{{ ship.racing }}', rotate = '{{ ship.rotate }}';
 
-                var s = new Ship(image, parseFloat(racing), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y));
+                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y));
                 ships.push(s);
             {% endfor %}
 

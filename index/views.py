@@ -82,19 +82,30 @@ def play(request, game_id):
 
 
 def change(request):
-    ship_id = request.GET.get("ship", None)
+    ship_id = request.GET.get("ship_id", None)
     game_id = request.GET.get("game_id", None)
     this_game = Game.objects.get(id=game_id)
-    ship = None
-    i = 0
-    for s in this_game.ships.get_queryset():
-        if i == ship_id:
-            ship = s
-            break
-        i += 1
+    ship = this_game.ships.get(id=ship_id)
+
     flag = False
     if ship is not None:
         flag = True
+
+    speed = request.GET.get("speed", None)
+    angle = request.GET.get("angle", None)
+    rotate = request.GET.get("rotate", None)
+    racing = request.GET.get("racing", None)
+    x = request.GET.get("x", None)
+    y = request.GET.get("y", None)
+
+    ship.speed = speed
+    ship.angle = angle
+    ship.rotate = rotate
+    ship.racing = racing
+    ship.x = x
+    ship.y = y
+
+    ship.save()
 
     data = {
         'flag': flag,
