@@ -24,9 +24,9 @@
                 ships.push(s);
             {% endfor %}
 
-            var index = 0;
+            var index = parseInt('{{ index }}');
 
-            init(ships, index);
+            init(ships, index, parseInt('{{ game.id }}'));
         }
     </script>
 
@@ -41,6 +41,7 @@
 
     </canvas>
 
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
     <script src="{% static 'js/play.js' %}"></script>
 
 </body>

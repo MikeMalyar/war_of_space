@@ -5,6 +5,7 @@ let interval = 100;
 
 var ships = [];
 var player = 0;
+var game_id = 0;
 
 var flag = true;
 
@@ -29,10 +30,11 @@ function Ship(image, racing, speed, rotate, angle, x, y)
     }
 }
 
-function init(list, index)
+function init(list, index, game)
 {
     ships = list;
     player = index;
+    game_id = game;
 
     setTimeout(function run()
     {
@@ -99,7 +101,29 @@ document.addEventListener('keydown',
                 flag = false;
                 break;
         }
+
+        $.ajax({
+            url: '/ajax/change/',
+            data: {
+                'game_id': game_id,
+                'ship': player,
+                'speed': ships[player].speed,
+                'angle': ships[player].angle,
+                'rotate': ships[player].rotate,
+                'racing': ships[player].racing,
+                'x': ships[player].x,
+                'y': ships[player].y,
+            },
+            dataType: 'json',
+            success: function(data){
+                console.log(data.flag);
+            }
+        });
+
         draw();
     }
 );
 
+$(document).keypress(function(){
+
+});

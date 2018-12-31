@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
 from .models import Player, Game, GameShip, Ship
@@ -72,6 +72,33 @@ def start(request, game_id):
 def play(request, game_id):
     this_game = Game.objects.get(id=game_id)
     player = this_game.players.get(user=request.user)
-    return render(request, 'play/play.html', {'game': this_game, 'player': player})
+    this_index = 0
+    for p in this_game.players.get_queryset():
+        if p.id == player.id:
+            break
+        this_index += 1
 
+    return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index})
+
+
+def change(request):
+    ship_id = request.GET.get("ship", None)
+    game_id = request.GET.get("game_id", None)
+    this_game = Game.objects.get(id=game_id)
+    ship = None
+    i = 0
+    for s in this_game.ships.get_queryset():
+        if i == ship_id:
+            ship = s
+            break
+        i += 1
+    flag = False
+    if ship is not None:
+        flag = True
+
+    data = {
+        'flag': flag,
+
+    }
+    return JsonResponse(data)
 
