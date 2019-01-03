@@ -115,20 +115,20 @@ document.addEventListener('keydown',
 function change(index)
 {
     $.ajax({
-            url: '/ajax/change/',
-            data: {
-                'game_id': game_id,
-                'ship_id': ships[index].id,
-                'speed': ships[index].speed,
-                'angle': ships[index].angle,
-                'rotate': ships[index].rotate,
-                'racing': ships[index].racing,
-                'x': ships[index].x,
-                'y': ships[index].y,
-            },
-            dataType: 'json',
-            success: function(data){
-                console.log(data.flag);
-            }
-        });
+        url: '/ajax/change/',
+        data: {
+            'game_id': game_id,
+            'ship_id': ships[index].id,
+            'speed': ships[index].speed,
+            'angle': ships[index].angle,
+            'rotate': ships[index].rotate,
+            'racing': ships[index].racing,
+            'x': ships[index].x,
+            'y': ships[index].y,
+        },
+        dataType: 'json',
+        success: function (data) {
+            //console.log(data.flag);
+        }
+    });
 }

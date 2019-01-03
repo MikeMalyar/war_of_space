@@ -41,9 +41,10 @@ def join(request, game_id):
 def add(request):
     if request.POST:
         name = request.POST.get('name')
+        quantity = request.POST.get('quantity')
         player = Player.objects.get(user=request.user)
 
-        Game.objects.create(title=name)
+        Game.objects.create(title=name, quantity=quantity)
 
         this_game = Game.objects.last()
 
@@ -77,6 +78,7 @@ def play(request, game_id):
         if p.id == player.id:
             break
         this_index += 1
+    print(this_game.ships.all())
 
     return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index})
 
