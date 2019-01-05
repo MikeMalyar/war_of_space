@@ -25,9 +25,15 @@
                 ships.push(s);
             {% endfor %}
 
+            var image1 = document.createElement("IMG");
+            var url1 = '{{ game.map.image.url }}';
+            image1.src = url1;
+
+            var map = new Map(image1);
+
             var index = parseInt('{{ index }}');
 
-            init(ships, index, parseInt('{{ game.id }}'));
+            init(map, ships, index, parseInt('{{ game.id }}'));
         }
     </script>
 

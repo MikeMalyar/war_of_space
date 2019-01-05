@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
-from .models import Player, Game, GameShip, Ship
+from .models import Player, Game, GameShip, Ship, Map
 
 
 def index(request):
@@ -43,8 +43,10 @@ def add(request):
         name = request.POST.get('name')
         quantity = request.POST.get('quantity')
         player = Player.objects.get(user=request.user)
+        map_id = request.POST.get('map')
+        this_map = Map.objects.get(id=map_id)
 
-        Game.objects.create(title=name, quantity=quantity)
+        Game.objects.create(title=name, quantity=quantity, map=this_map)
 
         this_game = Game.objects.last()
 
@@ -52,21 +54,22 @@ def add(request):
 
         return HttpResponseRedirect(reverse('games', args=()))
     else:
-        return render(request, 'game/addgame.html')
+        return render(request, 'game/addgame.html', {'maps': Map.objects.all()})
 
 
 def start(request, game_id):
     this_game = Game.objects.get(id=game_id)
 
-    this_game.started = True
-    for player in this_game.players.get_queryset():
+    if not this_game.started:
+        for player in this_game.players.get_queryset():
+            ship = player.ships.get_queryset().first()
 
-        ship = player.ships.get_queryset().first()
+            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, isgameship=True)
+            this_game.ships.add(gameship)
 
-        gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, isgameship=True)
-        this_game.ships.add(gameship)
+        this_game.started = True
+        this_game.save()
 
-    this_game.save()
     return HttpResponseRedirect(reverse('play', args=(game_id,)))
 
 

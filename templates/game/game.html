@@ -25,10 +25,18 @@
     <form action="{% url 'start' game.id %}" method="post">
         {% csrf_token %}
 
-        {% if game.players.first == player and game.players.get_queryset.count == game.quantity %}
+        {% if game.players.first == player and game.players.get_queryset.count == game.quantity%}
             <input type="submit" value="Start game">
         {% else %}
-            <input type="submit" value="Start game" disabled>
+            {% if game.started %}
+                {% for p in game.players.all %}
+                    {% if p.id == player.id %}
+                        <input type="submit" value="Start game">
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <input type="submit" value="Start game" disabled>
+            {% endif %}
         {% endif %}
     </form>
 </body>

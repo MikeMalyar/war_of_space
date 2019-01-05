@@ -8,7 +8,13 @@
     <form action="{% url 'add' %}" method="post">
         {% csrf_token %}
         <input type="text" name="name" required placeholder="Title">
-        <input type="number" name="quantity" required value="2" placeholder="Quantity">
+        <input type="number" name="quantity" required value="2" placeholder="Quantity"> <br>
+
+        <select name="map" required>
+            {% for map in maps %}
+                <option value="{{ map.id }}">{{ map }}</option>
+            {% endfor %}
+        </select>
 
         <input type="submit" value="Create game">
     </form>

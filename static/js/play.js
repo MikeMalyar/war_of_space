@@ -4,6 +4,7 @@ let ctx = canvas.getContext("2d");
 let interval = 100;
 
 var ships = [];
+var map = null;
 var player = 0;
 var game_id = 0;
 
@@ -22,7 +23,8 @@ function Ship(id, image, racing, speed, rotate, angle, x, y)
 
     this.move = function()
     {
-        var speed = this.speed * interval / 1000.0;
+        //var speed = this.speed * interval / 1000.0;
+        var speed = this.speed;
         var dx = speed * Math.sin(this.angle / 180 * Math.PI);
         var dy = speed * Math.cos(this.angle / 180 * Math.PI);
 
@@ -31,22 +33,49 @@ function Ship(id, image, racing, speed, rotate, angle, x, y)
     }
 }
 
-function init(list, index, game)
+function Map(image)
 {
+    this.image = image;
+}
+
+function init(m, list, index, game)
+{
+    map = m;
     ships = list;
     player = index;
     game_id = game;
+
+    ships.sort(function(a, b){
+       return(a.id - b.id);
+    });
 
     setTimeout(function run()
     {
         if (flag)
         {
             ships[player].move();
+            console.log(ships[player]);
             change(player);
             draw();
             setTimeout(run, interval);
         }
     }, interval);
+
+    /*var timer_id = setInterval(function run()
+    {
+        if (flag)
+        {
+            ships[player].move();
+            console.log(ships[player]);
+            change(player);
+            draw();
+            setTimeout(run, interval);
+        }
+        else
+        {
+            clearInterval(timer_id);
+        }
+    }, interval);*/
 
     draw();
 }
@@ -63,6 +92,8 @@ function drawRotatedImage(image, angle, x, y)
 function draw()
 {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawRotatedImage(map.image, 0, canvas.width / 2 - ships[player].x, canvas.height / 2 - ships[player].y);
 
     for(var i = 0; i < ships.length; ++i)
     {
@@ -89,19 +120,25 @@ document.addEventListener('keydown',
         switch (event.keyCode) {
             case 87:
                 ships[player].speed += ships[player].racing * interval / 1000.0;
+                //ships[player].speed = ships[player].racing;
+                ships[player].move();
                 change(player);
                 break;
             case 68:
                 ships[player].angle += ships[player].rotate * interval / 1000.0;
+                //ships[player].angle += ships[player].rotate;
                 change(player);
                 break;
             case 83:
                 ships[player].speed -= ships[player].racing * interval / 1000.0;
+                //ships[player].speed = -ships[player].racing;
+                //ships[player].move();
                 change(player);
                 break;
             case 65:
                 ships[player].angle -= ships[player].rotate * interval / 1000.0;
-                change(player);
+                //ships[player].angle -= ships[player].rotate;
+                //change(player);
                 break;
             case 8:
                 flag = false;

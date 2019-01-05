@@ -2,6 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Map(models.Model):
+    image = models.ImageField(null=True)
+    title = models.CharField(max_length=40, default="The map")
+
+    def __str__(self):
+        return self.title
+
+
 class Ship(models.Model):
     image = models.ImageField(null=True)
     racing = models.FloatField(default=1)       #Racing in pixels per second
@@ -25,6 +33,7 @@ class GameShip(Ship):
 
 
 class Game(models.Model):
+    map = models.ForeignKey(Map, on_delete=models.CASCADE, null=True)
     players = models.ManyToManyField(Player)
     title = models.CharField(max_length=40, default="The game")
     quantity = models.IntegerField(default=4)
@@ -33,7 +42,10 @@ class Game(models.Model):
 
     def __str__(self):
         size = self.players.get_queryset().count()
-        str1 = " Players " + size.__str__() + "/" + self.quantity.__str__()
+        t = "None"
+        if self.map is not None:
+            t = '"' + self.map.title + '"'
+        str1 = " Map " + t + " Players " + size.__str__() + "/" + self.quantity.__str__()
         return '"' + self.title + '"' + " Creator " + self.players.first().__str__() + str1
 
 
