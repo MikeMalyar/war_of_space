@@ -10,11 +10,31 @@ class Map(models.Model):
         return self.title
 
 
+class Shell(models.Model):
+    image = models.ImageField(null=True)
+    speed = models.FloatField(default=1)        #Speed in pixels per second
+    isgameshell = models.BooleanField(default=False)
+
+
+class GameShell(Shell):
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+
+
+class Weapon(models.Model):
+    image = models.ImageField(null=True)
+    title = models.CharField(max_length=40, default="The weapon")
+    shell = models.ForeignKey(Shell, on_delete=models.CASCADE, null=True)
+
+
 class Ship(models.Model):
     image = models.ImageField(null=True)
+    title = models.CharField(max_length=40, default="The ship")
     racing = models.FloatField(default=1)       #Racing in pixels per second
+    braking = models.FloatField(default=1)      #Braking in pixels per second
     rotate = models.FloatField(default=1)       #Rotation in degrees per second
     isgameship = models.BooleanField(default=False)
+    def_weapons = models.ManyToManyField(Weapon)
 
 
 class Player(models.Model):
@@ -30,6 +50,7 @@ class GameShip(Ship):
     y = models.FloatField(default=0)
     angle = models.FloatField(default=0)
     speed = models.FloatField(default=0)    #Speed in pixels per second
+    weapons = models.ManyToManyField(Weapon)
 
 
 class Game(models.Model):
@@ -38,7 +59,9 @@ class Game(models.Model):
     title = models.CharField(max_length=40, default="The game")
     quantity = models.IntegerField(default=4)
     started = models.BooleanField(default=False)
+
     ships = models.ManyToManyField(GameShip)
+    shells = models.ManyToManyField(Shell)
 
     def __str__(self):
         size = self.players.get_queryset().count()

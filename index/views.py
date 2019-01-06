@@ -64,7 +64,9 @@ def start(request, game_id):
         for player in this_game.players.get_queryset():
             ship = player.ships.get_queryset().first()
 
-            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, isgameship=True)
+            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, isgameship=True)
+            weapons = list(ship.def_weapons.all())
+            gameship.weapons.add(*weapons)
             this_game.ships.add(gameship)
 
         this_game.started = True
@@ -81,7 +83,6 @@ def play(request, game_id):
         if p.id == player.id:
             break
         this_index += 1
-    print(this_game.ships.all())
 
     return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index})
 
