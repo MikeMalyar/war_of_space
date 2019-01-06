@@ -10,6 +10,21 @@
     <script type="text/javascript">
         function f()
         {
+            if (document.addEventListener) {
+                if ('onwheel' in document) {
+                    // IE9+, FF17+, Ch31+
+                    document.addEventListener("wheel", onWheel);
+                } else if ('onmousewheel' in document) {
+                    // устаревший вариант события
+                    document.addEventListener("mousewheel", onWheel);
+                } else {
+                    // Firefox < 17
+                    document.addEventListener("MozMousePixelScroll", onWheel);
+                }
+            } else { // IE8-
+                //document.attachEvent("onmousewheel", onWheel);
+            }
+
             var ships = [];
 
             {% for ship in game.ships.all %}
@@ -46,7 +61,14 @@
 
             var index = parseInt('{{ index }}');
 
-            init(map, ships, index, parseInt('{{ game.id }}'));
+            var im1 = document.createElement("IMG");
+            im1.src = '{{ current.url }}';
+
+            var images = {
+                current: im1,
+            };
+
+            init(map, ships, index, parseInt('{{ game.id }}'), images);
         }
     </script>
 

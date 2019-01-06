@@ -4,9 +4,11 @@ let ctx = canvas.getContext("2d");
 let interval = 100;
 
 var ships = [];
+var images = null;
 var map = null;
 var player = 0;
 var game_id = 0;
+var curr_weap = 0;
 
 var flag = true;
 
@@ -46,12 +48,13 @@ function Map(image)
     this.image = image;
 }
 
-function init(m, list, index, game)
+function init(m, list, index, game, images_ob)
 {
     map = m;
     ships = list;
     player = index;
     game_id = game;
+    images = images_ob;
 
     ships.sort(function(a, b){
        return(a.id - b.id);
@@ -130,6 +133,11 @@ function draw()
     {
         var image = ships[player].weapons[i].image;
         ctx.drawImage(image, i * image.width * 3 / 2, canvas.height - image.height * 3 / 2);
+
+        if(i === curr_weap)
+        {
+            ctx.drawImage(images.current, i * image.width * 3 / 2, canvas.height - image.height * 3 / 2);
+        }
     }
 }
 
@@ -160,6 +168,28 @@ document.addEventListener('keydown',
         draw();
     }
 );
+
+function onWheel(e)
+{
+    e = e || window.event;
+
+    // wheelDelta не дает возможность узнать количество пикселей
+    var delta = e.deltaY || e.detail || e.wheelDelta;
+
+    if(delta > 0)
+    {
+        if(curr_weap > 0)
+            --curr_weap;
+    }
+    if(delta < 0)
+    {
+        if(curr_weap < ships[player].weapons.length - 1)
+            ++curr_weap;
+    }
+
+    draw();
+
+}
 
 function change(index)
 {

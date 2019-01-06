@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
-from .models import Player, Game, GameShip, Ship, Map
+from .models import Player, Game, GameShip, Ship, Map, MyImage
 
 
 def index(request):
@@ -83,8 +83,9 @@ def play(request, game_id):
         if p.id == player.id:
             break
         this_index += 1
+    current = MyImage.objects.get(title="Current").image
 
-    return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index})
+    return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index, 'current': current})
 
 
 def change(request):

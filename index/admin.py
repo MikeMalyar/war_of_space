@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Player, Game, Ship, GameShip, Map, Weapon, Shell
+from .models import Player, Game, Ship, GameShip, Map, Weapon, Shell, GameShell, MyImage
 
 admin.site.register(Player)
 admin.site.register(Game)
@@ -9,3 +9,5 @@ admin.site.register(GameShip)
 admin.site.register(Map)
 admin.site.register(Shell)
 admin.site.register(Weapon)
+admin.site.register(MyImage)
+admin.site.register(GameShell)

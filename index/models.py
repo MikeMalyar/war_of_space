@@ -72,3 +72,8 @@ class Game(models.Model):
         return '"' + self.title + '"' + " Creator " + self.players.first().__str__() + str1
 
 
+class MyImage(models.Model):
+    title = models.CharField(max_length=40)
+    image = models.ImageField(null=True)
+
+
