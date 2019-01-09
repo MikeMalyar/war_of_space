@@ -19,6 +19,8 @@ class Shell(models.Model):
 class GameShell(Shell):
     x = models.FloatField(default=0)
     y = models.FloatField(default=0)
+    angle = models.FloatField(default=0)
+    ship_id = models.IntegerField(default=0)
 
 
 class Weapon(models.Model):
@@ -61,7 +63,7 @@ class Game(models.Model):
     started = models.BooleanField(default=False)
 
     ships = models.ManyToManyField(GameShip)
-    shells = models.ManyToManyField(Shell)
+    shells = models.ManyToManyField(GameShell)
 
     def __str__(self):
         size = self.players.get_queryset().count()

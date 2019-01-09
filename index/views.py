@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
-from .models import Player, Game, GameShip, Ship, Map, MyImage
+from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell
 
 
 def index(request):
@@ -94,10 +94,6 @@ def change(request):
     this_game = Game.objects.get(id=game_id)
     ship = this_game.ships.get(id=ship_id)
 
-    flag = False
-    if ship is not None:
-        flag = True
-
     speed = request.GET.get("speed", None)
     angle = request.GET.get("angle", None)
     rotate = request.GET.get("rotate", None)
@@ -115,8 +111,37 @@ def change(request):
     ship.save()
 
     data = {
-        'flag': flag,
 
     }
+    return JsonResponse(data)
+
+
+def shoot(request):
+    game_id = request.GET.get("game_id", None)
+    weapon_id = request.GET.get("weapon_id", None)
+    this_game = Game.objects.get(id=game_id)
+    weapon = Weapon.objects.get(id=weapon_id)
+
+    shell = weapon.shell
+
+    angle = request.GET.get("angle", None)
+    x = request.GET.get("x", None)
+    y = request.GET.get("y", None)
+    ship_id = request.GET.get("ship_id", None)
+
+    gameshell = GameShell.objects.create(image=shell.image, speed=shell.speed, angle=angle, x=x, y=y, ship_id=ship_id)
+
+    this_game.shells.add(gameshell)
+
+    data = {
+        'id': gameshell.id,
+        'image': gameshell.image.url,
+        'speed': gameshell.speed,
+        'angle': gameshell.angle,
+        'x': gameshell.x,
+        'y': gameshell.y,
+        'ship_id': gameshell.ship_id,
+    }
+
     return JsonResponse(data)
 

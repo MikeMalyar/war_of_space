@@ -68,7 +68,24 @@
                 current: im1,
             };
 
-            init(map, ships, index, parseInt('{{ game.id }}'), images);
+            var shells = [];
+
+            {% for shell in game.shells.all %}
+                id = '{{ shell.id }}';
+                url = '{{ shell.image.url }}';
+                image = document.createElement("IMG");
+                image.src = url;
+                x = '{{ shell.x }}';
+                y = '{{ shell.y }}';
+                speed = '{{ shell.speed }}';
+                angle = '{{ shell.angle }}';
+                var ship_id = '{{ shell.ship_id }}';
+
+                s = new Shell(parseInt(id), parseInt(ship_id), image, parseFloat(speed), parseFloat(x), parseFloat(y), parseFloat(angle));
+                shells.push(s);
+            {% endfor %}
+
+            init(map, ships, shells, index, parseInt('{{ game.id }}'), images);
         }
     </script>
 

@@ -4,6 +4,7 @@ let ctx = canvas.getContext("2d");
 let interval = 100;
 
 var ships = [];
+var shells = [];
 var images = null;
 var map = null;
 var player = 0;
@@ -17,6 +18,27 @@ function Weapon(id, image, title)
     this.id = id;
     this.image = image;
     this.title = title;
+}
+
+function Shell(id, ship_id, image, speed, x, y, angle)
+{
+    this.id = id;
+    this.ship_id = ship_id;
+    this.image = image;
+    this.speed = speed;
+    this.angle = angle;
+    this.x = x;
+    this.y = y;
+
+    this.move = function()
+    {
+        var speed = this.speed * interval / 1000.0;
+        var dx = speed * Math.sin(this.angle / 180 * Math.PI);
+        var dy = speed * Math.cos(this.angle / 180 * Math.PI);
+
+        this.x += dx;
+        this.y -= dy;
+    }
 }
 
 function Ship(id, image, racing, braking, speed, rotate, angle, x, y, weapons)
@@ -48,10 +70,11 @@ function Map(image)
     this.image = image;
 }
 
-function init(m, list, index, game, images_ob)
+function init(m, ships_list, shells_list, index, game, images_ob)
 {
     map = m;
-    ships = list;
+    ships = ships_list;
+    shells = shells_list;
     player = index;
     game_id = game;
     images = images_ob;
@@ -64,8 +87,17 @@ function init(m, list, index, game, images_ob)
     {
         if (flag)
         {
+            for(var i = 0; i < shells.length; ++i)
+            {
+                if(shells[i].ship_id === ships[player].id)
+                {
+                    shells[i].move();
+                }
+            }
+
             ships[player].move();
             change(player);
+
             draw();
             setTimeout(run, interval);
         }
@@ -124,6 +156,18 @@ function draw()
         }
     }
 
+    for(i = 0; i < shells.length; ++i)
+    {
+        x = canvas.width / 2 - (ships[player].x - shells[i].x);
+        y = canvas.height / 2 - (ships[player].y - shells[i].y);
+
+        if(x + shells[i].image.width >= 0 && x - shells[i].image.width <= canvas.width
+            && y + shells[i].image.height >= 0 && y - shells[i].image.height <= canvas.height)
+        {
+            drawRotatedImage(shells[i].image, shells[i].angle, x, y);
+        }
+    }
+
     ctx.fillStyle = "#ff0000";
     ctx.font = "bold 50px sans-serif";
     ctx.textAlign = "right";
@@ -143,6 +187,7 @@ function draw()
 
 document.addEventListener('keydown',
     function (event) {
+        //console.log(event.keyCode);
         switch (event.keyCode) {
             case 87:
                 ships[player].speed += ships[player].racing * interval / 1000.0;
@@ -163,6 +208,15 @@ document.addEventListener('keydown',
             case 8:
                 flag = false;
                 break;
+            case 81:
+                changeWeapon(1);
+                break;
+            case 69:
+                changeWeapon(-1);
+                break;
+            case 32:
+                shoot();
+                break;
         }
 
         draw();
@@ -176,6 +230,11 @@ function onWheel(e)
     // wheelDelta не дает возможность узнать количество пикселей
     var delta = e.deltaY || e.detail || e.wheelDelta;
 
+    changeWeapon(delta);
+}
+
+function changeWeapon(delta)
+{
     if(delta > 0)
     {
         if(curr_weap > 0)
@@ -188,7 +247,6 @@ function onWheel(e)
     }
 
     draw();
-
 }
 
 function change(index)
@@ -209,5 +267,28 @@ function change(index)
         success: function (data) {
             //console.log(data.flag);
         }
+    });
+}
+
+function shoot()
+{
+    $.ajax({
+       url: '/ajax/shoot/',
+       data: {
+           'game_id': game_id,
+           'weapon_id': ships[player].weapons[curr_weap].id,
+           'x': ships[player].x + 32 * Math.sin(ships[player].angle / 180 * Math.PI),
+           'y': ships[player].y - 32 * Math.cos(ships[player].angle / 180 * Math.PI),
+           'angle': ships[player].angle,
+           'ship_id': ships[player].id,
+       },
+       dataType: 'json',
+       success: function (data) {
+           var image = document.createElement("IMG");
+           image.src = data.image;
+
+           var shell = new Shell(data.id, parseInt(data.ship_id), image, data.speed, parseFloat(data.x), parseFloat(data.y), parseFloat(data.angle));
+           shells.push(shell);
+       }
     });
 }
