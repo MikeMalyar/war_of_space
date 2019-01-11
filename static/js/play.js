@@ -20,7 +20,7 @@ function Weapon(id, image, title)
     this.title = title;
 }
 
-function Shell(id, ship_id, image, speed, x, y, angle)
+function Shell(id, ship_id, image, speed, x, y, angle, lifetime, time)
 {
     this.id = id;
     this.ship_id = ship_id;
@@ -29,6 +29,8 @@ function Shell(id, ship_id, image, speed, x, y, angle)
     this.angle = angle;
     this.x = x;
     this.y = y;
+    this.lifetime = lifetime;
+    this.time = time;
 
     this.move = function()
     {
@@ -92,6 +94,13 @@ function init(m, ships_list, shells_list, index, game, images_ob)
                 if(shells[i].ship_id === ships[player].id)
                 {
                     shells[i].move();
+                    shells[i].time += interval / 1000.0;
+                    changeShell(i);
+                    if(shells[i].time > shells[i].lifetime)
+                    {
+                        dropShell(i);
+                        shells.splice(i, 1);
+                    }
                 }
             }
 
@@ -287,8 +296,44 @@ function shoot()
            var image = document.createElement("IMG");
            image.src = data.image;
 
-           var shell = new Shell(data.id, parseInt(data.ship_id), image, data.speed, parseFloat(data.x), parseFloat(data.y), parseFloat(data.angle));
+           var shell = new Shell(data.id, parseInt(data.ship_id), image, data.speed, parseFloat(data.x), parseFloat(data.y), parseFloat(data.angle), parseInt(data.lifetime), parseFloat(data.time));
            shells.push(shell);
        }
+    });
+}
+
+function changeShell(index)
+{
+    $.ajax({
+        url: '/ajax/changeShell/',
+        data: {
+            'game_id': game_id,
+            'shell_id': shells[index].id,
+            'speed': shells[index].speed,
+            'angle': shells[index].angle,
+            'x': shells[index].x,
+            'y': shells[index].y,
+            'lifetime': shells[index].lifetime,
+            'time': shells[index].time,
+        },
+        dataType: 'json',
+        success: function (data) {
+            //console.log(data.flag);
+        }
+    });
+}
+
+function dropShell(index)
+{
+    $.ajax({
+        url: '/ajax/dropShell/',
+        data: {
+            'game_id': game_id,
+            'shell_id': shells[index].id,
+        },
+        dataType: 'json',
+        success: function (data) {
+            //console.log(data.flag);
+        }
     });
 }

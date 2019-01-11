@@ -129,7 +129,7 @@ def shoot(request):
     y = request.GET.get("y", None)
     ship_id = request.GET.get("ship_id", None)
 
-    gameshell = GameShell.objects.create(image=shell.image, speed=shell.speed, angle=angle, x=x, y=y, ship_id=ship_id)
+    gameshell = GameShell.objects.create(image=shell.image, speed=shell.speed, angle=angle, x=x, y=y, ship_id=ship_id, lifetime=shell.lifetime)
 
     this_game.shells.add(gameshell)
 
@@ -141,7 +141,51 @@ def shoot(request):
         'x': gameshell.x,
         'y': gameshell.y,
         'ship_id': gameshell.ship_id,
+        'lifetime': gameshell.lifetime,
+        'time': gameshell.time,
     }
 
     return JsonResponse(data)
 
+
+def change_shell(request):
+    shell_id = request.GET.get("shell_id", None)
+    game_id = request.GET.get("game_id", None)
+    this_game = Game.objects.get(id=game_id)
+    shell = this_game.shells.get(id=shell_id)
+
+    speed = request.GET.get("speed", None)
+    angle = request.GET.get("angle", None)
+    x = request.GET.get("x", None)
+    y = request.GET.get("y", None)
+    lifetime = request.GET.get("lifetime", None)
+    time = request.GET.get("time", None)
+
+    shell.speed = speed
+    shell.angle = angle
+    shell.x = x
+    shell.y = y
+    shell.lifetime = lifetime
+    shell.time = time
+
+    shell.save()
+
+    data = {
+
+    }
+    return JsonResponse(data)
+
+
+def drop_shell(request):
+    shell_id = request.GET.get("shell_id", None)
+    game_id = request.GET.get("game_id", None)
+    this_game = Game.objects.get(id=game_id)
+    shell = GameShell.objects.get(id=shell_id)
+
+    this_game.shells.remove(shell)
+    shell.delete()
+
+    data = {
+
+    }
+    return JsonResponse(data)

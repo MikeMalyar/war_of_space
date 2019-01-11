@@ -13,6 +13,7 @@ class Map(models.Model):
 class Shell(models.Model):
     image = models.ImageField(null=True)
     speed = models.FloatField(default=1)        #Speed in pixels per second
+    lifetime = models.IntegerField(default=5)       #Lifetime in seconds
     isgameshell = models.BooleanField(default=False)
 
 
@@ -21,6 +22,7 @@ class GameShell(Shell):
     y = models.FloatField(default=0)
     angle = models.FloatField(default=0)
     ship_id = models.IntegerField(default=0)
+    time = models.FloatField(default=0)
 
 
 class Weapon(models.Model):

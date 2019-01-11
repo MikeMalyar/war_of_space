@@ -80,8 +80,10 @@
                 speed = '{{ shell.speed }}';
                 angle = '{{ shell.angle }}';
                 var ship_id = '{{ shell.ship_id }}';
+                var lifetime = '{{ shell.lifetime }}';
+                var time = '{{ shell.time }}';
 
-                s = new Shell(parseInt(id), parseInt(ship_id), image, parseFloat(speed), parseFloat(x), parseFloat(y), parseFloat(angle));
+                s = new Shell(parseInt(id), parseInt(ship_id), image, parseFloat(speed), parseFloat(x), parseFloat(y), parseFloat(angle), parseInt(lifetime), parseFloat(time));
                 shells.push(s);
             {% endfor %}
 
