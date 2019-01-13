@@ -39,6 +39,7 @@ class Ship(models.Model):
     rotate = models.FloatField(default=1)       #Rotation in degrees per second
     isgameship = models.BooleanField(default=False)
     def_weapons = models.ManyToManyField(Weapon)
+    maxhp = models.IntegerField(default=100)
 
 
 class Player(models.Model):
@@ -55,6 +56,7 @@ class GameShip(Ship):
     angle = models.FloatField(default=0)
     speed = models.FloatField(default=0)    #Speed in pixels per second
     weapons = models.ManyToManyField(Weapon)
+    hp = models.FloatField(default=100)
 
 
 class Game(models.Model):

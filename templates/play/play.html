@@ -35,7 +35,7 @@
                 var x = '{{ ship.x }}', y = '{{ ship.y }}';
                 var speed = '{{ ship.speed }}', angle = '{{ ship.angle }}';
                 var racing = '{{ ship.racing }}', rotate = '{{ ship.rotate }}', braking = '{{ ship.braking }}';
-
+                var hp = '{{ ship.hp }}', maxhp = '{{ ship.maxhp }}';
                 var weapons = [];
 
                 {% for weapon in ship.weapons.all %}
@@ -49,7 +49,7 @@
                     weapons.push(w);
                 {% endfor %}
 
-                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), weapons);
+                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), parseFloat(hp), parseInt(maxhp), weapons);
                 ships.push(s);
             {% endfor %}
 

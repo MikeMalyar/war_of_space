@@ -43,7 +43,7 @@ function Shell(id, ship_id, image, speed, x, y, angle, lifetime, time)
     }
 }
 
-function Ship(id, image, racing, braking, speed, rotate, angle, x, y, weapons)
+function Ship(id, image, racing, braking, speed, rotate, angle, x, y, hp, maxhp, weapons)
 {
     this.id = id;
     this.image = image;
@@ -54,6 +54,8 @@ function Ship(id, image, racing, braking, speed, rotate, angle, x, y, weapons)
     this.braking = braking;
     this.x = x;
     this.y = y;
+    this.hp = hp;
+    this.maxhp = maxhp;
     this.weapons = weapons;
 
     this.move = function()
@@ -105,6 +107,28 @@ function init(m, ships_list, shells_list, index, game, images_ob)
             }
 
             ships[player].move();
+            for(i = 0; i < ships.length; ++i)
+            {
+                if(i !== player)
+                {
+                    if(checkCollision(ships[i], ships[player]))
+                    {
+                        ships[i].hp = 0;
+                        change(i);
+                        ships[player].hp = 0;
+                    }
+                }
+            }
+            for(i = 0; i < shells.length; ++i)
+            {
+                if(shells[i].ship_id !== ships[player].id)
+                {
+                    if(checkCollision(shells[i], ships[player]))
+                    {
+
+                    }
+                }
+            }
             change(player);
 
             draw();
@@ -181,6 +205,10 @@ function draw()
     ctx.font = "bold 50px sans-serif";
     ctx.textAlign = "right";
     ctx.fillText("" + parseInt(String(ships[player].speed)), canvas.width, canvas.height - 100);
+
+    ctx.fillStyle = "#008800";
+    ctx.font = "bold 40px sans-serif";
+    ctx.fillText("" + parseInt(String(ships[player].hp)) + "/" + parseInt(String(ships[player].maxhp)), canvas.width, canvas.height - 50);
 
     for(i = 0; i < ships[player].weapons.length; ++i)
     {
@@ -271,6 +299,7 @@ function change(index)
             'racing': ships[index].racing,
             'x': ships[index].x,
             'y': ships[index].y,
+            'hp': ships[player].hp,
         },
         dataType: 'json',
         success: function (data) {
@@ -336,4 +365,14 @@ function dropShell(index)
             //console.log(data.flag);
         }
     });
+}
+
+function length(x1, y1, x2, y2)
+{
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+
+function checkCollision(obj1, obj2)
+{
+    return length(obj1.x, obj1.y, obj2.x, obj2.y) <= length(0, 0, obj1.image.width, obj1.image.height) + length(0, 0, obj2.image.width, obj2.image.height);
 }

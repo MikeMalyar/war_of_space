@@ -64,7 +64,7 @@ def start(request, game_id):
         for player in this_game.players.get_queryset():
             ship = player.ships.get_queryset().first()
 
-            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, isgameship=True)
+            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, maxhp=ship.maxhp, hp=ship.maxhp, isgameship=True)
             weapons = list(ship.def_weapons.all())
             gameship.weapons.add(*weapons)
             this_game.ships.add(gameship)
@@ -100,6 +100,7 @@ def change(request):
     racing = request.GET.get("racing", None)
     x = request.GET.get("x", None)
     y = request.GET.get("y", None)
+    hp = request.GET.get("hp", None)
 
     ship.speed = speed
     ship.angle = angle
@@ -107,6 +108,7 @@ def change(request):
     ship.racing = racing
     ship.x = x
     ship.y = y
+    ship.hp = hp;
 
     ship.save()
 
