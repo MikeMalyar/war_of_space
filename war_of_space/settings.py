@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'index.apps.IndexConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -142,3 +143,5 @@ STATICFILES_DIRS = (
 )
 
 MEDIA_URL = '/media/'
+
+ASGI_APPLICATION = 'war_of_space.routing.application'

@@ -13,6 +13,13 @@ var curr_weap = 0;
 
 var flag = true;
 
+var shipSocket = null;
+
+function setShipSocket(socket)
+{
+    shipSocket = socket;
+}
+
 function Weapon(id, image, title)
 {
     this.id = id;
@@ -113,9 +120,9 @@ function init(m, ships_list, shells_list, index, game, images_ob)
                 {
                     if(checkCollision(ships[i], ships[player]))
                     {
-                        ships[i].hp = 0;
-                        change(i);
-                        ships[player].hp = 0;
+                        //ships[i].hp = 0;
+                        //change(i);
+                        //ships[player].hp = 0;
                     }
                 }
             }
@@ -306,6 +313,10 @@ function change(index)
             //console.log(data.flag);
         }
     });
+
+    shipSocket.send(JSON.stringify({
+            'ship_id': ships[index].id,
+        }));
 }
 
 function shoot()
