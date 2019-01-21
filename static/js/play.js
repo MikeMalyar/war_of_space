@@ -15,11 +15,6 @@ var flag = true;
 
 var shipSocket = null;
 
-function setShipSocket(socket)
-{
-    shipSocket = socket;
-}
-
 function Weapon(id, image, title)
 {
     this.id = id;
@@ -94,6 +89,39 @@ function init(m, ships_list, shells_list, index, game, images_ob)
        return(a.id - b.id);
     });
 
+    shipSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/play/' + game_id + '/');
+
+    shipSocket.onmessage = function(e)
+    {
+        var data = JSON.parse(e.data);
+        var ship_id = data['ship_id'];
+
+        for(var i = 0; i < ships.length; ++i)
+        {
+            if(ships[i].id === ship_id)
+            {
+                ships[i].speed = data['speed'];
+                ships[i].angle = data['angle'];
+                ships[i].racing = data['racing'];
+                ships[i].rotate = data['rotate'];
+                ships[i].x = data['x'];
+                ships[i].y = data['y'];
+                ships[i].hp = data['hp'];
+
+                draw();
+
+                break;
+            }
+        }
+    };
+
+    shipSocket.onclose = function(e)
+    {
+        console.error("web socked closed unexpectedly");
+    };
+
     setTimeout(function run()
     {
         if (flag)
@@ -120,9 +148,7 @@ function init(m, ships_list, shells_list, index, game, images_ob)
                 {
                     if(checkCollision(ships[i], ships[player]))
                     {
-                        //ships[i].hp = 0;
-                        //change(i);
-                        //ships[player].hp = 0;
+
                     }
                 }
             }
@@ -295,7 +321,7 @@ function changeWeapon(delta)
 
 function change(index)
 {
-    $.ajax({
+    /*$.ajax({
         url: '/ajax/change/',
         data: {
             'game_id': game_id,
@@ -312,10 +338,20 @@ function change(index)
         success: function (data) {
             //console.log(data.flag);
         }
-    });
+    });*/
 
+    //console.log(shipSocket);
+
+    if(shipSocket.readyState !== 0)
     shipSocket.send(JSON.stringify({
             'ship_id': ships[index].id,
+            'speed': ships[index].speed,
+            'angle': ships[index].angle,
+            'rotate': ships[index].rotate,
+            'racing': ships[index].racing,
+            'x': ships[index].x,
+            'y': ships[index].y,
+            'hp': ships[player].hp,
         }));
 }
 
