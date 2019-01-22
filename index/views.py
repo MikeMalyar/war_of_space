@@ -108,7 +108,7 @@ def change(request):
     ship.racing = racing
     ship.x = x
     ship.y = y
-    ship.hp = hp;
+    ship.hp = hp
 
     ship.save()
 

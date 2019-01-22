@@ -321,6 +321,18 @@ function changeWeapon(delta)
 
 function change(index)
 {
+    if(shipSocket.readyState !== 0)
+    shipSocket.send(JSON.stringify({
+            'ship_id': ships[index].id,
+            'speed': ships[index].speed,
+            'angle': ships[index].angle,
+            'rotate': ships[index].rotate,
+            'racing': ships[index].racing,
+            'x': ships[index].x,
+            'y': ships[index].y,
+            'hp': ships[player].hp,
+        }));
+
     /*$.ajax({
         url: '/ajax/change/',
         data: {
@@ -339,20 +351,6 @@ function change(index)
             //console.log(data.flag);
         }
     });*/
-
-    //console.log(shipSocket);
-
-    if(shipSocket.readyState !== 0)
-    shipSocket.send(JSON.stringify({
-            'ship_id': ships[index].id,
-            'speed': ships[index].speed,
-            'angle': ships[index].angle,
-            'rotate': ships[index].rotate,
-            'racing': ships[index].racing,
-            'x': ships[index].x,
-            'y': ships[index].y,
-            'hp': ships[player].hp,
-        }));
 }
 
 function shoot()
