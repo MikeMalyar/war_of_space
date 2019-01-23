@@ -154,23 +154,26 @@ def change_shell(request):
     shell_id = request.GET.get("shell_id", None)
     game_id = request.GET.get("game_id", None)
     this_game = Game.objects.get(id=game_id)
-    shell = this_game.shells.get(id=shell_id)
 
-    speed = request.GET.get("speed", None)
-    angle = request.GET.get("angle", None)
-    x = request.GET.get("x", None)
-    y = request.GET.get("y", None)
-    lifetime = request.GET.get("lifetime", None)
-    time = request.GET.get("time", None)
+    if this_game.shells.filter(id=shell_id).exists():
 
-    shell.speed = speed
-    shell.angle = angle
-    shell.x = x
-    shell.y = y
-    shell.lifetime = lifetime
-    shell.time = time
+        shell = this_game.shells.get(id=shell_id)
 
-    shell.save()
+        speed = request.GET.get("speed", None)
+        angle = request.GET.get("angle", None)
+        x = request.GET.get("x", None)
+        y = request.GET.get("y", None)
+        lifetime = request.GET.get("lifetime", None)
+        time = request.GET.get("time", None)
+
+        shell.speed = speed
+        shell.angle = angle
+        shell.x = x
+        shell.y = y
+        shell.lifetime = lifetime
+        shell.time = time
+
+        shell.save()
 
     data = {
 
@@ -182,10 +185,12 @@ def drop_shell(request):
     shell_id = request.GET.get("shell_id", None)
     game_id = request.GET.get("game_id", None)
     this_game = Game.objects.get(id=game_id)
-    shell = GameShell.objects.get(id=shell_id)
 
-    this_game.shells.remove(shell)
-    shell.delete()
+    if GameShell.objects.filter(id=shell_id).exists():
+        shell = GameShell.objects.get(id=shell_id)
+
+        this_game.shells.remove(shell)
+        shell.delete()
 
     data = {
 

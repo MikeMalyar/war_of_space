@@ -13,7 +13,7 @@ var curr_weap = 0;
 
 var flag = true;
 
-var shipSocket = null;
+var socket = null;
 
 function Weapon(id, image, title)
 {
@@ -89,35 +89,78 @@ function init(m, ships_list, shells_list, index, game, images_ob)
        return(a.id - b.id);
     });
 
-    shipSocket = new WebSocket(
+    socket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/play/' + game_id + '/');
 
-    shipSocket.onmessage = function(e)
+    socket.onmessage = function(e)
     {
         var data = JSON.parse(e.data);
-        var ship_id = data['ship_id'];
 
-        for(var i = 0; i < ships.length; ++i)
+        if(data['obj'] === 'ship')
         {
-            if(ships[i].id === ship_id)
+            var ship_id = data['ship_id'];
+
+            for (var i = 0; i < ships.length; ++i)
             {
-                ships[i].speed = data['speed'];
-                ships[i].angle = data['angle'];
-                ships[i].racing = data['racing'];
-                ships[i].rotate = data['rotate'];
-                ships[i].x = data['x'];
-                ships[i].y = data['y'];
-                ships[i].hp = data['hp'];
+                if (ships[i].id === ship_id && i !== player)
+                {
+                    ships[i].speed = data['speed'];
+                    ships[i].angle = data['angle'];
+                    ships[i].racing = data['racing'];
+                    ships[i].rotate = data['rotate'];
+                    ships[i].x = data['x'];
+                    ships[i].y = data['y'];
+                    ships[i].hp = data['hp'];
+
+                    draw();
+
+                    break;
+                }
+            }
+        }
+        if(data['obj'] === 'shell')
+        {
+            var shell_id = data['shell_id'];
+
+            var flag = true;
+            for (i = 0; i < shells.length; ++i)
+            {
+                if (shells[i].id === shell_id)
+                {
+                    shells[i].ship_id = data['ship_id'];
+                    shells[i].speed = data['speed'];
+                    shells[i].angle = data['angle'];
+                    shells[i].x = data['x'];
+                    shells[i].y = data['y'];
+                    shells[i].lifetime = data['lifetime'];
+                    shells[i].time = data['time'];
+
+                    if(data['destroyed'])
+                    {
+                        shells.splice(i, 1);
+                    }
+
+                    draw();
+
+                    flag = false;
+                    break;
+                }
+            }
+
+            if(flag)
+            {
+                var image = document.createElement("IMG");
+                image.src = data['image'];
+
+                shells.push(new Shell(shell_id, data['ship_id'], image, data['speed'], data['x'], data['y'], data['angle'], data['lifetime'], data['time']));
 
                 draw();
-
-                break;
             }
         }
     };
 
-    shipSocket.onclose = function(e)
+    socket.onclose = function(e)
     {
         console.error("web socked closed unexpectedly");
     };
@@ -132,7 +175,7 @@ function init(m, ships_list, shells_list, index, game, images_ob)
                 {
                     shells[i].move();
                     shells[i].time += interval / 1000.0;
-                    changeShell(i);
+                    changeShell(i, false);
                     if(shells[i].time > shells[i].lifetime)
                     {
                         dropShell(i);
@@ -321,8 +364,9 @@ function changeWeapon(delta)
 
 function change(index)
 {
-    if(shipSocket.readyState !== 0)
-    shipSocket.send(JSON.stringify({
+    if(socket.readyState !== 0)
+    socket.send(JSON.stringify({
+            'obj': 'ship',
             'ship_id': ships[index].id,
             'speed': ships[index].speed,
             'angle': ships[index].angle,
@@ -333,7 +377,7 @@ function change(index)
             'hp': ships[player].hp,
         }));
 
-    /*$.ajax({
+    $.ajax({
         url: '/ajax/change/',
         data: {
             'game_id': game_id,
@@ -350,7 +394,7 @@ function change(index)
         success: function (data) {
             //console.log(data.flag);
         }
-    });*/
+    });
 }
 
 function shoot()
@@ -374,10 +418,27 @@ function shoot()
            shells.push(shell);
        }
     });
+
+    changeShell(shells.length - 1, false);
 }
 
-function changeShell(index)
+function changeShell(index, destroyed)
 {
+    if(socket.readyState !== 0)
+    socket.send(JSON.stringify({
+            'obj': 'shell',
+            'shell_id': shells[index].id,
+            'ship_id': shells[index].ship_id,
+            'image': shells[index].image.src,
+            'speed': shells[index].speed,
+            'angle': shells[index].angle,
+            'x': shells[index].x,
+            'y': shells[index].y,
+            'lifetime': shells[index].lifetime,
+            'time': shells[index].time,
+            'destroyed': destroyed,
+        }));
+
     $.ajax({
         url: '/ajax/changeShell/',
         data: {
@@ -399,6 +460,8 @@ function changeShell(index)
 
 function dropShell(index)
 {
+    changeShell(index, true);
+
     $.ajax({
         url: '/ajax/dropShell/',
         data: {
