@@ -2,9 +2,29 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class StaticObject(models.Model):
+    image = models.ImageField(null=True)
+    size = models.IntegerField(default=1)
+    title = models.CharField(max_length=40, default="The object")
+    isgameobject = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+
+
+class GameStaticObject(StaticObject):
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+
+
 class Map(models.Model):
     image = models.ImageField(null=True)
     title = models.CharField(max_length=40, default="The map")
+    small_objects = models.IntegerField(default=0)
+    medium_objects = models.IntegerField(default=0)
+    large_objects = models.IntegerField(default=0)
+    width = models.IntegerField(default=1000)
+    height = models.IntegerField(default=500)
 
     def __str__(self):
         return self.title
@@ -65,9 +85,11 @@ class Game(models.Model):
     title = models.CharField(max_length=40, default="The game")
     quantity = models.IntegerField(default=4)
     started = models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
 
     ships = models.ManyToManyField(GameShip)
     shells = models.ManyToManyField(GameShell)
+    static_objects = models.ManyToManyField(GameStaticObject)
 
     def __str__(self):
         size = self.players.get_queryset().count()

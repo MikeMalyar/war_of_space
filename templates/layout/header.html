@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Welcome</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/mainContainer.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/Footer.css' %}">
+        <link rel="stylesheet" href="{% static 'ckeditor/ckeditor/plugins/codesnippet/lib/highlight/styles/default.css' %}" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+<body>
+	<style type="text/css">
+        html, body{
+            background: #343a40;
+        }
+	*{
+		color:#c5d8f7;
+	}
+	a{
+		padding: 5px;
+ 		color: #c5d8f7 !important;
+ 		text-decoration: none;
+ 		font-size: 18px;
+	}
+	a:hover{
+		color: white !important;
+		font-size: 20px;
+		transition: all 1s;
+ 		text-decoration: none;
+	}
+        #stickly_sidebar{
+            top: 67px;
+            position: fixed;
+            max-width: 20%;
+        }
+</style>
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+  <!-- Brand -->
+  <span class="navbar-brand">
+
+  </span>
+
+  <!-- Toggler/collapsibe Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navbar links -->
+
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav">
+
+        <li class="nav-item">
+            <a href="{% url 'login' %}">Login</a>
+        </li>
+
+        <li class="nav-item">
+            <a href='accounts/logout'>Logout</a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'profile' %}">Profile</a>
+        </li>
+
+    </ul>
+  </div>
+</nav>

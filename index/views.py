@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
-from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell
+from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell, StaticObject, GameStaticObject
 
 
 def index(request):
@@ -69,10 +69,79 @@ def start(request, game_id):
             gameship.weapons.add(*weapons)
             this_game.ships.add(gameship)
 
+        import random
+
+        small_objects = StaticObject.objects.filter(size=1).filter(isgameobject=False)
+
+        for i in range(1, this_game.map.small_objects + 1, 1):
+            j = 0
+            for obj in small_objects.all():
+                if i % small_objects.count() == j:
+                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
+                                                              isgameobject=True)
+                    gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                    gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                    gameobj.save()
+
+                    this_game.static_objects.add(gameobj)
+
+                j += 1
+
+        medium_objects = StaticObject.objects.filter(size=2).filter(isgameobject=False)
+
+        for i in range(1, this_game.map.medium_objects + 1, 1):
+            j = 0
+            for obj in medium_objects.all():
+                if i % medium_objects.count() == j:
+
+                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size, isgameobject=True)
+                    gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                    gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                    gameobj.save()
+
+                    this_game.static_objects.add(gameobj)
+
+                j += 1
+
+        large_objects = StaticObject.objects.filter(size=3).filter(isgameobject=False)
+
+        for i in range(1, this_game.map.large_objects + 1, 1):
+            j = 0
+            for obj in large_objects.all():
+                if i % large_objects.count() == j:
+                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
+                                                              isgameobject=True)
+                    gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                    gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                    gameobj.save()
+
+                    this_game.static_objects.add(gameobj)
+
+                j += 1
+
         this_game.started = True
         this_game.save()
 
     return HttpResponseRedirect(reverse('play', args=(game_id,)))
+
+
+def finish(request, game_id):
+    this_game = Game.objects.get(id=game_id)
+
+    if this_game.started and not this_game.finished:
+        for gameship in this_game.ships.get_queryset():
+            gameship.delete()
+
+        for gameshell in this_game.shells.get_queryset():
+            gameshell.delete()
+
+        for obj in this_game.static_objects.get_queryset():
+            obj.delete()
+
+        this_game.finished = True
+        this_game.save()
+
+    return HttpResponseRedirect(reverse('games'))
 
 
 def play(request, game_id):

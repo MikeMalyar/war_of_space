@@ -5,6 +5,7 @@ let interval = 100;
 
 var ships = [];
 var shells = [];
+var static_objects = [];
 var images = null;
 var map = null;
 var player = 0;
@@ -14,6 +15,15 @@ var curr_weap = 0;
 var flag = true;
 
 var socket = null;
+
+function StaticObject(id, image, title, x, y)
+{
+    this.id = id;
+    this.image = image;
+    this.title = title;
+    this.x = x;
+    this.y = y;
+}
 
 function Weapon(id, image, title)
 {
@@ -76,11 +86,12 @@ function Map(image)
     this.image = image;
 }
 
-function init(m, ships_list, shells_list, index, game, images_ob)
+function init(m, ships_list, shells_list, static_list, index, game, images_ob)
 {
     map = m;
     ships = ships_list;
     shells = shells_list;
+    static_objects = static_list;
     player = index;
     game_id = game;
     images = images_ob;
@@ -274,6 +285,18 @@ function draw()
             && y + shells[i].image.height >= 0 && y - shells[i].image.height <= canvas.height)
         {
             drawRotatedImage(shells[i].image, shells[i].angle, x, y);
+        }
+    }
+
+    for(i = 0; i < static_objects.length; ++i)
+    {
+        x = canvas.width / 2 - (ships[player].x - static_objects[i].x);
+        y = canvas.height / 2 - (ships[player].y - static_objects[i].y);
+
+        if(x + static_objects[i].image.width >= 0 && x - static_objects[i].image.width <= canvas.width
+            && y + static_objects[i].image.height >= 0 && y - static_objects[i].image.height <= canvas.height)
+        {
+            drawRotatedImage(static_objects[i].image, 0, x, y);
         }
     }
 

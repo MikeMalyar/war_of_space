@@ -87,7 +87,22 @@
                 shells.push(s);
             {% endfor %}
 
-            init(map, ships, shells, index, parseInt('{{ game.id }}'), images);
+            var static_objects = [];
+
+            {% for obj in game.static_objects.all %}
+                id = '{{ obj.id }}';
+                url = '{{ obj.image.url }}';
+                image = document.createElement("IMG");
+                image.src = url;
+                x = '{{ obj.x }}';
+                y = '{{ obj.y }}';
+                var title = '{{ obj.title }}';
+
+                var obj = new StaticObject(parseInt(id), image, title, parseFloat(x), parseFloat(y));
+                static_objects.push(obj);
+            {% endfor %}
+
+            init(map, ships, shells, static_objects, index, parseInt('{{ game.id }}'), images);
         }
     </script>
 

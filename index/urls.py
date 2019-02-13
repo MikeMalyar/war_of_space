@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url
-from .views import index, profile, games, game, join, add, start, play, change, shoot, change_shell, drop_shell
+from .views import index, profile, games, game, join, add, start, play, change, shoot, change_shell, drop_shell, finish
 
 urlpatterns = [
     path('', index, name='index'),
@@ -11,6 +11,7 @@ urlpatterns = [
     path('games/<int:game_id>/', game, name='game'),
     path('games/<int:game_id>/join', join, name='join'),
     path('games/<int:game_id>/start', start, name='start'),
+    path('games/<int:game_id>/finish', finish, name='finish'),
     path('addgame/', add, name='add'),
     path('play/<int:game_id>', play, name='play'),
     url(r'^ajax/change/$', change, name='change'),

@@ -1,0 +1,87 @@
+.MainContainer form.login{
+	 margin: 80px 30% 0px 25%;
+	}
+
+	.MainContainer form.login input{
+		background: #343a40;
+		border-width: 0px;
+	  box-shadow: 0px 0px 4px grey;
+		width: 300px;
+		height: 50px;
+		margin-top: 20px;
+		font-size: 16px;
+		color: #c5d8f7;
+}
+.MainContainer form.Registration input{
+		background: #343a40;
+		border-width: 0px;
+	  box-shadow: 0px 0px 4px grey;
+		width: 169px;
+		height: 30px;
+		margin-top: 10px;
+		font-size: 14px;
+		color: #c5d8f7;
+}
+
+.MainContainer form.formquetion input{
+		background: #343a40;
+		border-width: 0px;
+	  box-shadow: 0px 0px 4px grey;
+		width: 169px;
+		height: 30px;
+		margin-top: 10px;
+		font-size: 14px;
+		color: #c5d8f7;
+}
+
+.MainContainer form.formquetion textarea{
+		margin-top: 10px;
+		background: #343a40;
+		border-width: 0px;
+	  box-shadow: 0px 0px 4px grey;
+		font-size: 14px;
+		color: #c5d8f7;
+}
+
+.MainContainer form.Registration, form.formquetion{
+	margin-top: 20px;
+}
+
+.MainContainer form.Registration label{
+padding-left: 40px;
+margin-top: 20px;
+}
+
+
+.MainContainer .ForumBlock a{
+	float: right;
+	font-size: 20px;
+	font-style: italic;
+	margin-left: 15px;
+	padding: 5px;
+	text-decoration: none;
+	color: #c5d8f7;
+}
+
+.MainContainer .ForumBlock a:hover{
+background: #383c42;
+}
+
+
+
+.MainContainer .ANSWER{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 5px;
+	grid-template-areas:
+    'answer_form answer_block';
+}
+.MainContainer .answer_block{
+	grid-area: answer_block;
+    height: 400px;
+    overflow: auto;
+    padding:5px;
+}
+.MainContainer .answer_form{
+	grid-area: answer_form;
+}

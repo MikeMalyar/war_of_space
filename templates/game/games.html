@@ -9,7 +9,9 @@
 
     <ul>
     {% for game in games %}
-        <li><a href="/games/{{ game.id }}">{{ game }}</a></li>
+        {% if not game.finished %}
+            <li><a href="/games/{{ game.id }}">{{ game }}</a></li>
+        {% endif %}
     {% endfor %}
     </ul>
 </body>
