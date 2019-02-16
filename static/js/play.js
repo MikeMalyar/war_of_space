@@ -6,6 +6,7 @@ let interval = 100;
 var ships = [];
 var shells = [];
 var static_objects = [];
+var moveable_objects = [];
 var images = null;
 var map = null;
 var player = 0;
@@ -23,6 +24,29 @@ function StaticObject(id, image, title, x, y)
     this.title = title;
     this.x = x;
     this.y = y;
+    this.angle = 0;
+}
+
+function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rotate)
+{
+    this.id = id;
+    this.image = image;
+    this.title = title;
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+    this.rotate = rotate;
+    this.cx = cx;
+    this.cy = cy;
+    this.orbit_rotate = orbit_rotate;
+
+    this.orbit = function () {
+        var x1 = (this.x - this.cx) * Math.cos(this.orbit_rotate / 180 * Math.PI) - (this.y - this.cy) * Math.sin(this.orbit_rotate / 180 * Math.PI) + this.cx;
+        var y1 = (this.x - this.cx) * Math.sin(this.orbit_rotate / 180 * Math.PI) + (this.y - this.cy) * Math.cos(this.orbit_rotate / 180 * Math.PI) + this.cy;
+
+        this.x = x1;
+        this.y = y1;
+    }
 }
 
 function Weapon(id, image, title)
@@ -86,12 +110,13 @@ function Map(image)
     this.image = image;
 }
 
-function init(m, ships_list, shells_list, static_list, index, game, images_ob)
+function init(m, ships_list, shells_list, static_list, moveable_list, index, game, images_ob)
 {
     map = m;
     ships = ships_list;
     shells = shells_list;
     static_objects = static_list;
+    moveable_objects = moveable_list;
     player = index;
     game_id = game;
     images = images_ob;
@@ -187,6 +212,9 @@ function init(m, ships_list, shells_list, static_list, index, game, images_ob)
                     shells[i].move();
                     shells[i].time += interval / 1000.0;
                     changeShell(i, false);
+
+                    //check collisions
+
                     if(shells[i].time > shells[i].lifetime)
                     {
                         dropShell(i);
@@ -196,6 +224,7 @@ function init(m, ships_list, shells_list, static_list, index, game, images_ob)
             }
 
             ships[player].move();
+
             for(i = 0; i < ships.length; ++i)
             {
                 if(i !== player)
@@ -206,17 +235,32 @@ function init(m, ships_list, shells_list, static_list, index, game, images_ob)
                     }
                 }
             }
-            for(i = 0; i < shells.length; ++i)
+            for(i = 0; i < static_objects.length; ++i)
             {
-                if(shells[i].ship_id !== ships[player].id)
+                if(checkCollision(ships[player], static_objects[i]))
                 {
-                    if(checkCollision(shells[i], ships[player]))
-                    {
 
-                    }
                 }
             }
+            for(i = 0; i < moveable_objects.length; ++i)
+            {
+                if(checkCollision(ships[player], moveable_objects[i]))
+                {
+
+                }
+            }
+
             change(player);
+
+            for(i = 0; i < moveable_objects.length; ++i)
+            {
+                if(i % ships.length === player)
+                {
+                    moveable_objects[i].angle += moveable_objects[i].rotate;
+                    moveable_objects[i].orbit();
+                    changeObj(i);
+                }
+            }
 
             draw();
             setTimeout(run, interval);
@@ -297,6 +341,18 @@ function draw()
             && y + static_objects[i].image.height >= 0 && y - static_objects[i].image.height <= canvas.height)
         {
             drawRotatedImage(static_objects[i].image, 0, x, y);
+        }
+    }
+
+    for(i = 0; i < moveable_objects.length; ++i)
+    {
+        x = canvas.width / 2 - (ships[player].x - moveable_objects[i].x);
+        y = canvas.height / 2 - (ships[player].y - moveable_objects[i].y);
+
+        if(x + moveable_objects[i].image.width >= 0 && x - moveable_objects[i].image.width <= canvas.width
+            && y + moveable_objects[i].image.height >= 0 && y - moveable_objects[i].image.height <= canvas.height)
+        {
+            drawRotatedImage(moveable_objects[i].image, moveable_objects[i].angle, x, y);
         }
     }
 
@@ -498,12 +554,101 @@ function dropShell(index)
     });
 }
 
+function changeObj(index)
+{
+    $.ajax({
+        url: '/ajax/changeObj/',
+        data: {
+            'game_id': game_id,
+            'obj_id': moveable_objects[index].id,
+            'angle': moveable_objects[index].angle,
+            'rotate': moveable_objects[index].rotate,
+            'x': moveable_objects[index].x,
+            'y': moveable_objects[index].y,
+            'orbit_rotate': moveable_objects[player].orbit_rotate,
+            'cx': moveable_objects[index].cx,
+            'cy': moveable_objects[index].cy,
+        },
+        dataType: 'json',
+        success: function (data) {
+            //console.log(data.flag);
+        }
+    });
+}
+
 function length(x1, y1, x2, y2)
 {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
+function Point(x, y)
+{
+    this.x = x;
+    this.y = y;
+}
+
 function checkCollision(obj1, obj2)
 {
-    return length(obj1.x, obj1.y, obj2.x, obj2.y) <= length(0, 0, obj1.image.width, obj1.image.height) + length(0, 0, obj2.image.width, obj2.image.height);
+    if(length(obj1.x, obj1.y, obj2.x, obj2.y) <= length(0, 0, obj1.image.width, obj1.image.height) + length(0, 0, obj2.image.width, obj2.image.height))
+    {
+        var mas1 = [], mas2 = [];
+
+        mas1.push(new Point(obj1.x - obj1.image.width / 2, obj1.y - obj1.image.height / 2));
+        mas1.push(new Point(obj1.x + obj1.image.width / 2, obj1.y - obj1.image.height / 2));
+        mas1.push(new Point(obj1.x + obj1.image.width / 2, obj1.y + obj1.image.height / 2));
+        mas1.push(new Point(obj1.x - obj1.image.width / 2, obj1.y + obj1.image.height / 2));
+
+        mas2.push(new Point(obj2.x - obj2.image.width / 2, obj2.y - obj2.image.height / 2));
+        mas2.push(new Point(obj2.x + obj2.image.width / 2, obj2.y - obj2.image.height / 2));
+        mas2.push(new Point(obj2.x + obj2.image.width / 2, obj2.y + obj2.image.height / 2));
+        mas2.push(new Point(obj2.x - obj2.image.width / 2, obj2.y + obj2.image.height / 2));
+
+        for (var i = 0; i < mas1.length; ++i)
+        {
+            var x1 = (mas1[i].x - obj1.x) * Math.cos(obj1.angle / 180 * Math.PI) - (mas1[i].y - obj1.y) * Math.sin(obj1.angle / 180 * Math.PI) + obj1.x;
+            var y1 = (mas1[i].x - obj1.x) * Math.sin(obj1.angle / 180 * Math.PI) + (mas1[i].y - obj1.y) * Math.cos(obj1.angle / 180 * Math.PI) + obj1.y;
+
+            mas1[i].x = x1;
+            mas1[i].y = y1;
+        }
+        for (i = 0; i < mas2.length; ++i)
+        {
+            x1 = (mas2[i].x - obj1.x) * Math.cos(obj1.angle / 180 * Math.PI) - (mas2[i].y - obj1.y) * Math.sin(obj1.angle / 180 * Math.PI) + obj1.x;
+            y1 = (mas2[i].x - obj1.x) * Math.sin(obj1.angle / 180 * Math.PI) + (mas2[i].y - obj1.y) * Math.cos(obj1.angle / 180 * Math.PI) + obj1.y;
+
+            mas2[i].x = x1;
+            mas2[i].y = y1;
+        }
+
+        for (i = 0; i < mas1.length; ++i)
+        {
+            var mas = [];
+
+            for (var j = 0; j < mas2.length; ++j)
+            {
+                mas.push(new Point(mas1[i].x - mas2[j].x, mas1[i].y - mas2[j].y));
+            }
+
+            var s = 0;
+            const e = 0.00001;
+
+            for (j = 0; j < mas.length - 1; ++j)
+            {
+                var d = mas[j].x * mas[j + 1].y - mas[j + 1].x * mas[j].y;
+
+                if (d === 0)
+                    d = 1;
+                else
+                    d = Math.sign(d);
+
+                d *= Math.acos((mas[j].x * mas[j + 1].x + mas[j].y * mas[j + 1].y) / length(0, 0, mas[j].x, mas[j].y) / length(0, 0, mas[j + 1].x, mas[j + 1].y));
+
+                s += d;
+            }
+
+            if(s > Math.PI)
+                return true;
+        }
+    }
+    return false;
 }

@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url
-from .views import index, profile, games, game, join, add, start, play, change, shoot, change_shell, drop_shell, finish
+from .views import index, profile, games, game, join, add, start, play, change, shoot, change_shell, drop_shell, finish, change_obj
 
 urlpatterns = [
     path('', index, name='index'),
@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^ajax/changeShell/$', change_shell, name='change_shell'),
     url(r'^ajax/dropShell/$', drop_shell, name='drop_shell'),
     url(r'^ajax/shoot/$', shoot, name='shoot'),
+    url(r'^ajax/changeObj/$', change_obj, name='change_obj'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

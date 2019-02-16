@@ -102,7 +102,27 @@
                 static_objects.push(obj);
             {% endfor %}
 
-            init(map, ships, shells, static_objects, index, parseInt('{{ game.id }}'), images);
+            var moveable_objects = [];
+
+            {% for obj in game.moveable_objects.all %}
+                id = '{{ obj.id }}';
+                url = '{{ obj.image.url }}';
+                image = document.createElement("IMG");
+                image.src = url;
+                x = '{{ obj.x }}';
+                y = '{{ obj.y }}';
+                title = '{{ obj.title }}';
+                angle = '{{ obj.angle }}';
+                rotate = '{{ obj.rotate }}';
+                var cx = '{{ obj.cx }}';
+                var cy = '{{ obj.cy }}';
+                var orbit = '{{ obj.orbit_rotate }}';
+
+                var obj = new MoveableObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), parseFloat(angle), parseFloat(rotate), parseFloat(cx), parseFloat(cy), parseFloat(orbit));
+                moveable_objects.push(obj);
+            {% endfor %}
+
+            init(map, ships, shells, static_objects, moveable_objects, index, parseInt('{{ game.id }}'), images);
         }
     </script>
 

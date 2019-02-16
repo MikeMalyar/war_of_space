@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
-from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell, StaticObject, GameStaticObject
+from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell, StaticObject, GameStaticObject, GameMoveableObject
 
 
 def index(request):
@@ -77,13 +77,27 @@ def start(request, game_id):
             j = 0
             for obj in small_objects.all():
                 if i % small_objects.count() == j:
-                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
+                    if random.randint(0, 2) >= 0:  # == 0
+                        gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
                                                               isgameobject=True)
-                    gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
-                    gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
-                    gameobj.save()
+                        gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                        gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                        gameobj.save()
 
-                    this_game.static_objects.add(gameobj)
+                        this_game.static_objects.add(gameobj)
+                    else:
+                        gameobj = GameMoveableObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
+                                                                  isgameobject=True)
+                        gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                        gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                        gameobj.angle = random.randint(0, 360)
+                        gameobj.rotate = random.randint(0, 10) / gameobj.size
+                        gameobj.cx = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
+                        gameobj.cy = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
+                        gameobj.orbit_rotate = random.randint(0, 3) / gameobj.size
+                        gameobj.save()
+
+                        this_game.moveable_objects.add(gameobj)
 
                 j += 1
 
@@ -136,6 +150,9 @@ def finish(request, game_id):
             gameshell.delete()
 
         for obj in this_game.static_objects.get_queryset():
+            obj.delete()
+
+        for obj in this_game.moveable_objects.get_queryset():
             obj.delete()
 
         this_game.finished = True
@@ -260,6 +277,36 @@ def drop_shell(request):
 
         this_game.shells.remove(shell)
         shell.delete()
+
+    data = {
+
+    }
+    return JsonResponse(data)
+
+
+def change_obj(request):
+    obj_id = request.GET.get("obj_id", None)
+    game_id = request.GET.get("game_id", None)
+    this_game = Game.objects.get(id=game_id)
+    obj = this_game.moveable_objects.get(id=obj_id)
+
+    angle = request.GET.get("angle", None)
+    rotate = request.GET.get("rotate", None)
+    x = request.GET.get("x", None)
+    y = request.GET.get("y", None)
+    cx = request.GET.get("cx", None)
+    cy = request.GET.get("cy", None)
+    orbit_rotate = request.GET.get("orbit_rotate", None)
+
+    obj.orbit_rotate = orbit_rotate
+    obj.angle = angle
+    obj.rotate = rotate
+    obj.x = x
+    obj.y = y
+    obj.cx = cx
+    obj.cy = cy
+
+    obj.save()
 
     data = {
 

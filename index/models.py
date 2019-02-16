@@ -17,6 +17,16 @@ class GameStaticObject(StaticObject):
     y = models.FloatField(default=0)
 
 
+class GameMoveableObject(StaticObject):
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+    rotate = models.FloatField(default=0)
+    angle = models.FloatField(default=0)
+    cx = models.FloatField(default=0)
+    cy = models.FloatField(default=0)
+    orbit_rotate = models.FloatField(default=0)
+
+
 class Map(models.Model):
     image = models.ImageField(null=True)
     title = models.CharField(max_length=40, default="The map")
@@ -90,6 +100,7 @@ class Game(models.Model):
     ships = models.ManyToManyField(GameShip)
     shells = models.ManyToManyField(GameShell)
     static_objects = models.ManyToManyField(GameStaticObject)
+    moveable_objects = models.ManyToManyField(GameMoveableObject)
 
     def __str__(self):
         size = self.players.get_queryset().count()
