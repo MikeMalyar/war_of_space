@@ -194,6 +194,28 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
                 draw();
             }
         }
+        if(data['obj'] === 'move_obj')
+        {
+            var obj_id = data['obj_id'];
+
+            for (i = 0; i < moveable_objects.length; ++i)
+            {
+                if (moveable_objects[i].id === obj_id)
+                {
+                    moveable_objects[i].orbit_rotate = data['orbit_rotate'];
+                    moveable_objects[i].angle = data['angle'];
+                    moveable_objects[i].rotate = data['rotate'];
+                    moveable_objects[i].x = data['x'];
+                    moveable_objects[i].y = data['y'];
+                    moveable_objects[i].cx = data['cx'];
+                    moveable_objects[i].cy = data['cy'];
+
+                    draw();
+
+                    break;
+                }
+            }
+        }
     };
 
     socket.onclose = function(e)
@@ -556,6 +578,19 @@ function dropShell(index)
 
 function changeObj(index)
 {
+    if(socket.readyState !== 0)
+    socket.send(JSON.stringify({
+            'obj': 'move_obj',
+            'obj_id': moveable_objects[index].id,
+            'angle': moveable_objects[index].angle,
+            'rotate': moveable_objects[index].rotate,
+            'x': moveable_objects[index].x,
+            'y': moveable_objects[index].y,
+            'orbit_rotate': moveable_objects[player].orbit_rotate,
+            'cx': moveable_objects[index].cx,
+            'cy': moveable_objects[index].cy,
+        }));
+
     $.ajax({
         url: '/ajax/changeObj/',
         data: {

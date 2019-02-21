@@ -1,18 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Available games</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <h3>Create new game <a href="{% url 'add' %}">Create game</a> <br></h3>
+
     <h3>Available games</h3>
 
     <ul>
     {% for game in games %}
         {% if not game.finished %}
-            <li><a href="/games/{{ game.id }}">{{ game }}</a></li>
+            <li>
+                <a href="/games/{{ game.id }}"> <p>Title: {{ game.title }}</p> </a>
+                <img src="{{ game.map.image.url }}" width="100" height="50" align="left">
+                <p>Map: {{ game.map.title }} <br> Creator: {{ game.players.first }}</p>
+
+            </li>
         {% endif %}
     {% endfor %}
     </ul>
-</body>
-</html>
+
+{% endblock %}

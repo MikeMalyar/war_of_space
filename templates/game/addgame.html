@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create game</title>
-</head>
-<body>
-    <form action="{% url 'add' %}" method="post">
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <form action="{% url 'add' %}" method="post" class="game">
         {% csrf_token %}
         <input type="text" name="name" required placeholder="Title">
         <input type="number" name="quantity" required value="2" placeholder="Quantity"> <br>
@@ -18,5 +15,5 @@
 
         <input type="submit" value="Create game">
     </form>
-</body>
-</html>
+
+{% endblock %}

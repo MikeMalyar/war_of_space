@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ game.title }}</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block main %}
+
     <h3>Players</h3>
     <ul>
         {% for player in game.players.all %}
@@ -12,17 +9,16 @@
         {% endfor %}
     </ul>
 
-    <form action="{% url 'join' game.id %}" method="post">
+    <form action="{% url 'join' game.id %}" method="post" class="game">
         {% csrf_token %}
 
         {% if game.players.get_queryset.count < game.quantity %}
-            <input type="submit" value="Join">
-        {% else %}
-            <input type="submit" value="Join" disabled>
+            <input type="submit" value="Join game">
+
         {% endif %}
     </form>
 
-    <form action="{% url 'start' game.id %}" method="post">
+    <form action="{% url 'start' game.id %}" method="post" class="game">
         {% csrf_token %}
 
         {% if game.players.first == player and game.players.get_queryset.count == game.quantity and not game.finished %}
@@ -34,26 +30,22 @@
                         <input type="submit" value="Start game">
                     {% endif %}
                 {% endfor %}
-            {% else %}
-                <input type="submit" value="Start game" disabled>
             {% endif %}
         {% endif %}
     </form>
 
-    <form action="{% url 'finish' game.id %}" method="post">
+    <form action="{% url 'finish' game.id %}" method="post" class="game">
         {% csrf_token %}
 
         {% if game.players.first == player %}
 
             {% if game.started and not game.finished %}
                 <input type="submit" value="Finish game">
-            {% else %}
-                <input type="submit" value="Finish game" disabled>
             {% endif %}
 
         {% else %}
 
         {% endif %}
     </form>
-</body>
-</html>
+
+{% endblock %}

@@ -77,7 +77,7 @@ def start(request, game_id):
             j = 0
             for obj in small_objects.all():
                 if i % small_objects.count() == j:
-                    if random.randint(0, 2) >= 0:  # == 0
+                    if random.randint(0, 100) <= 99 - this_game.map.move_percent:  # == 0
                         gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
                                                               isgameobject=True)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)

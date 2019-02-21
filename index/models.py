@@ -33,6 +33,7 @@ class Map(models.Model):
     small_objects = models.IntegerField(default=0)
     medium_objects = models.IntegerField(default=0)
     large_objects = models.IntegerField(default=0)
+    move_percent = models.IntegerField(default=10)
     width = models.IntegerField(default=1000)
     height = models.IntegerField(default=500)
 

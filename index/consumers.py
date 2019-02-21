@@ -52,6 +52,19 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'destroyed': text_data_json['destroyed'],
             }
 
+        if text_data_json['obj'] == 'move_obj':
+            info = {
+                'type': 'move_obj',
+                'obj_id': text_data_json['obj_id'],
+                'angle': text_data_json['angle'],
+                'rotate': text_data_json['rotate'],
+                'x': text_data_json['x'],
+                'y': text_data_json['y'],
+                'cx': text_data_json['cx'],
+                'cy': text_data_json['cy'],
+                'orbit_rotate': text_data_json['orbit_rotate'],
+            }
+
         await self.channel_layer.group_send(
             self.room_group_name, info
         )
@@ -84,4 +97,18 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'lifetime': event['lifetime'],
             'time': event['time'],
             'destroyed': event['destroyed'],
+        }))
+
+    async def move_obj(self, event):
+
+        await self.send(text_data=json.dumps({
+            'obj': 'move_obj',
+            'obj_id': event['obj_id'],
+            'angle': event['angle'],
+            'rotate': event['rotate'],
+            'x': event['x'],
+            'y': event['y'],
+            'cx': event['cx'],
+            'cy': event['cy'],
+            'orbit_rotate': event['orbit_rotate'],
         }))
