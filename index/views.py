@@ -62,7 +62,7 @@ def start(request, game_id):
 
     if not this_game.started:
         for player in this_game.players.get_queryset():
-            ship = player.ships.get_queryset().first()
+            ship = player.ships.get(id=player.ship_id)
 
             gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, maxhp=ship.maxhp, hp=ship.maxhp, isgameship=True)
             weapons = list(ship.def_weapons.all())
@@ -312,3 +312,43 @@ def change_obj(request):
 
     }
     return JsonResponse(data)
+
+
+def choose_ship(request):
+    player_id = request.GET.get("player_id", None)
+    ship_id = request.GET.get("ship_id", None)
+
+    player = Player.objects.get(id=player_id)
+    player.ship_id = ship_id
+    player.save()
+
+    return JsonResponse({})
+
+
+def shop(request):
+    player = Player.objects.get(user=request.user)
+
+    ships = []
+
+    for ship in Ship.objects.all():
+        if not ship.isgameship:
+            if not player.ships.filter(id=ship.id).exists():
+                ships.append(ship)
+
+    return render(request, 'shop/shop.html', {'player': player, 'ships': ships})
+
+
+def buy_ship(request):
+    player_id = request.GET.get("player_id", None)
+    ship_id = request.GET.get("ship_id", None)
+
+    player = Player.objects.get(id=player_id)
+    ship = Ship.objects.get(id=ship_id)
+
+    player.ships.add(ship)
+
+    player.money -= ship.cost
+
+    player.save()
+
+    return JsonResponse({})

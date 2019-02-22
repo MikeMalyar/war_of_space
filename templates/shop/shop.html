@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+    <form class="game">
+    {% for ship in ships %}
+        <div id = "{{ ship.id }}" style="background:#202020">
+            <p>{{ ship.title }}</p>
+            <img src="{{ ship.image.url }}" align="left">
+            <p>Racing: {{ ship.racing }} Braking: {{ ship.braking }} Rotation: {{ ship.rotate }}</p>
+            <p>Cost: {{ ship.cost }}</p>
+
+            {% if player.money >= ship.cost %}
+            <input type="button" onclick="{
+                $.ajax({
+                    url: '/ajax/buyShip/',
+                    data: {
+                    'player_id': {{ player.id }},
+                    'ship_id': {{ ship.id }},
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        document.getElementById('{{ ship.id }}').remove();
+                    }
+                });
+            }" value="Buy">
+            {% else %}
+                <p>You don't have such money</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+{% endblock %}

@@ -2,12 +2,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import url
-from .views import index, profile, games, game, join, add, start, play, change, shoot, change_shell, drop_shell, finish, change_obj
+from .views import *
 
 urlpatterns = [
     path('', index, name='index'),
     path('profile/', profile, name='profile'),
     path('games/', games, name='games'),
+    path('shop/', shop, name='shop'),
     path('games/<int:game_id>/', game, name='game'),
     path('games/<int:game_id>/join', join, name='join'),
     path('games/<int:game_id>/start', start, name='start'),
@@ -19,4 +20,6 @@ urlpatterns = [
     url(r'^ajax/dropShell/$', drop_shell, name='drop_shell'),
     url(r'^ajax/shoot/$', shoot, name='shoot'),
     url(r'^ajax/changeObj/$', change_obj, name='change_obj'),
+    url(r'^ajax/chooseShip/$', choose_ship, name='choose_ship'),
+    url(r'^ajax/buyShip/$', buy_ship, name='buy_ship'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

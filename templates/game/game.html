@@ -18,6 +18,40 @@
         {% endif %}
     </form>
 
+    <form class="game">
+    {% for p in game.players.all %}
+        {% if p.id == player.id %}
+            <p>Choose your ship</p>
+            {% for ship in player.ships.all %}
+                <div id = "{{ ship.id }}" {% if player.ship_id == ship.id %} style="background:#505050" {% else %} style="background:#202020" {% endif %}>
+                <p>{{ ship.title }}</p>
+                <img src="{{ ship.image.url }}" align="left">
+                <p>Racing: {{ ship.racing }} Braking: {{ ship.braking }} Rotation: {{ ship.rotate }}</p>
+                <input type="button" onclick="{
+                    $.ajax({
+                        url: '/ajax/chooseShip/',
+                        data: {
+                            'player_id': {{ player.id }},
+                            'ship_id': {{ ship.id }},
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            document.getElementById('{{ ship.id }}').style='background:#505050';
+                            {% for s in player.ships.all %}
+                                {% if s.id != ship.id %}
+                                    document.getElementById('{{ s.id }}').style='background:#202020';
+                                {% endif %}
+                            {% endfor %}
+                        }
+                    });
+                }" value="Choose">
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+    </form>
+
+
     <form action="{% url 'start' game.id %}" method="post" class="game">
         {% csrf_token %}
 
@@ -47,5 +81,7 @@
 
         {% endif %}
     </form>
+
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 
 {% endblock %}

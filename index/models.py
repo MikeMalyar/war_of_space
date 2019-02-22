@@ -71,11 +71,14 @@ class Ship(models.Model):
     isgameship = models.BooleanField(default=False)
     def_weapons = models.ManyToManyField(Weapon)
     maxhp = models.IntegerField(default=100)
+    cost = models.IntegerField(default=1000)
 
 
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ships = models.ManyToManyField(Ship)
+    ship_id = models.IntegerField(default=0)
+    money = models.IntegerField(default=5000)
 
     def __str__(self):
         return self.user.username
