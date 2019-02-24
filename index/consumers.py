@@ -35,6 +35,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'x': text_data_json['x'],
                 'y': text_data_json['y'],
                 'hp': text_data_json['hp'],
+                'money': text_data_json['money'],
             }
 
         if text_data_json['obj'] == 'shell':
@@ -63,6 +64,16 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'cx': text_data_json['cx'],
                 'cy': text_data_json['cy'],
                 'orbit_rotate': text_data_json['orbit_rotate'],
+                'visible': text_data_json['visible'],
+            }
+
+        if text_data_json['obj'] == 'static_obj':
+            info = {
+                'type': 'static_obj',
+                'obj_id': text_data_json['obj_id'],
+                'x': text_data_json['x'],
+                'y': text_data_json['y'],
+                'visible': text_data_json['visible'],
             }
 
         await self.channel_layer.group_send(
@@ -81,6 +92,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'x': event['x'],
             'y': event['y'],
             'hp': event['hp'],
+            'money': event['money'],
         }))
 
     async def shell(self, event):
@@ -111,4 +123,15 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'cx': event['cx'],
             'cy': event['cy'],
             'orbit_rotate': event['orbit_rotate'],
+            'visible': event['visible'],
+        }))
+
+    async def static_obj(self, event):
+
+        await self.send(text_data=json.dumps({
+            'obj': 'static_obj',
+            'obj_id': event['obj_id'],
+            'x': event['x'],
+            'y': event['y'],
+            'visible': event['visible'],
         }))

@@ -2,31 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-class StaticObject(models.Model):
-    image = models.ImageField(null=True)
-    size = models.IntegerField(default=1)
-    title = models.CharField(max_length=40, default="The object")
-    isgameobject = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
-
-
-class GameStaticObject(StaticObject):
-    x = models.FloatField(default=0)
-    y = models.FloatField(default=0)
-
-
-class GameMoveableObject(StaticObject):
-    x = models.FloatField(default=0)
-    y = models.FloatField(default=0)
-    rotate = models.FloatField(default=0)
-    angle = models.FloatField(default=0)
-    cx = models.FloatField(default=0)
-    cy = models.FloatField(default=0)
-    orbit_rotate = models.FloatField(default=0)
-
-
 class Map(models.Model):
     image = models.ImageField(null=True)
     title = models.CharField(max_length=40, default="The map")
@@ -62,6 +37,35 @@ class Weapon(models.Model):
     shell = models.ForeignKey(Shell, on_delete=models.CASCADE, null=True)
 
 
+class StaticObject(models.Model):
+    image = models.ImageField(null=True)
+    size = models.IntegerField(default=1)
+    title = models.CharField(max_length=40, default="The object")
+    isgameobject = models.BooleanField(default=False)
+    issolid = models.BooleanField(default=True)
+    money_plus = models.IntegerField(default=0)
+    hp_plus = models.IntegerField(default=0)
+    visible = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class GameStaticObject(StaticObject):
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+
+
+class GameMoveableObject(StaticObject):
+    x = models.FloatField(default=0)
+    y = models.FloatField(default=0)
+    rotate = models.FloatField(default=0)
+    angle = models.FloatField(default=0)
+    cx = models.FloatField(default=0)
+    cy = models.FloatField(default=0)
+    orbit_rotate = models.FloatField(default=0)
+
+
 class Ship(models.Model):
     image = models.ImageField(null=True)
     title = models.CharField(max_length=40, default="The ship")
@@ -91,6 +95,7 @@ class GameShip(Ship):
     speed = models.FloatField(default=0)    #Speed in pixels per second
     weapons = models.ManyToManyField(Weapon)
     hp = models.FloatField(default=100)
+    money = models.IntegerField(default=0)
 
 
 class Game(models.Model):

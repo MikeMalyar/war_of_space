@@ -17,7 +17,7 @@ var flag = true;
 
 var socket = null;
 
-function StaticObject(id, image, title, x, y)
+function StaticObject(id, image, title, x, y, solid, money, hp, visible)
 {
     this.id = id;
     this.image = image;
@@ -25,9 +25,13 @@ function StaticObject(id, image, title, x, y)
     this.x = x;
     this.y = y;
     this.angle = 0;
+    this.solid = solid;
+    this.money = money;
+    this.hp = hp;
+    this.visible = visible;
 }
 
-function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rotate)
+function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rotate, solid, money, hp, visible)
 {
     this.id = id;
     this.image = image;
@@ -39,6 +43,10 @@ function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rot
     this.cx = cx;
     this.cy = cy;
     this.orbit_rotate = orbit_rotate;
+    this.solid = solid;
+    this.money = money;
+    this.hp = hp;
+    this.visible = visible;
 
     this.orbit = function () {
         var x1 = (this.x - this.cx) * Math.cos(this.orbit_rotate / 180 * Math.PI) - (this.y - this.cy) * Math.sin(this.orbit_rotate / 180 * Math.PI) + this.cx;
@@ -79,7 +87,7 @@ function Shell(id, ship_id, image, speed, x, y, angle, lifetime, time)
     }
 }
 
-function Ship(id, image, racing, braking, speed, rotate, angle, x, y, hp, maxhp, weapons)
+function Ship(id, image, racing, braking, speed, rotate, angle, x, y, hp, maxhp, money, weapons)
 {
     this.id = id;
     this.image = image;
@@ -93,6 +101,7 @@ function Ship(id, image, racing, braking, speed, rotate, angle, x, y, hp, maxhp,
     this.hp = hp;
     this.maxhp = maxhp;
     this.weapons = weapons;
+    this.money = money;
 
     this.move = function()
     {
@@ -148,6 +157,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
                     ships[i].x = data['x'];
                     ships[i].y = data['y'];
                     ships[i].hp = data['hp'];
+                    ships[i].money = data['money'];
 
                     draw();
 
@@ -200,7 +210,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
 
             for (i = 0; i < moveable_objects.length; ++i)
             {
-                if (moveable_objects[i].id === obj_id)
+                if (i % ships.length !== player && moveable_objects[i].id === obj_id)
                 {
                     moveable_objects[i].orbit_rotate = data['orbit_rotate'];
                     moveable_objects[i].angle = data['angle'];
@@ -209,6 +219,29 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
                     moveable_objects[i].y = data['y'];
                     moveable_objects[i].cx = data['cx'];
                     moveable_objects[i].cy = data['cy'];
+                    moveable_objects[i].visible = false;
+                    if(data['visible'] === 1)
+                        moveable_objects[i].visible = true;
+
+                    draw();
+
+                    break;
+                }
+            }
+        }
+        if(data['obj'] === 'static_obj')
+        {
+            obj_id = data['obj_id'];
+
+            for (i = 0; i < static_objects.length; ++i)
+            {
+                if (static_objects[i].id === obj_id)
+                {
+                    static_objects[i].x = data['x'];
+                    static_objects[i].y = data['y'];
+                    static_objects[i].visible = false;
+                    if(data['visible'] === 1)
+                        static_objects[i].visible = true;
 
                     draw();
 
@@ -261,14 +294,38 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
             {
                 if(checkCollision(ships[player], static_objects[i]))
                 {
+                    if(static_objects[i].visible === true)
+                    if(static_objects[i].solid === true)
+                    {
 
+                    }
+                    else
+                    {
+                        ships[player].money += static_objects[i].money;
+                        ships[player].hp += static_objects[i].hp;
+
+                        static_objects[i].visible = false;
+                        changeStaticObj(i);
+                    }
                 }
             }
             for(i = 0; i < moveable_objects.length; ++i)
             {
                 if(checkCollision(ships[player], moveable_objects[i]))
                 {
+                    if(moveable_objects[i].visible === true)
+                    if(moveable_objects[i].solid === true)
+                    {
 
+                    }
+                    else
+                    {
+                        ships[player].money += moveable_objects[i].money;
+                        ships[player].hp += moveable_objects[i].hp;
+
+                        moveable_objects[i].visible = false;
+                        changeObj(i);
+                    }
                 }
             }
 
@@ -356,25 +413,31 @@ function draw()
 
     for(i = 0; i < static_objects.length; ++i)
     {
-        x = canvas.width / 2 - (ships[player].x - static_objects[i].x);
-        y = canvas.height / 2 - (ships[player].y - static_objects[i].y);
-
-        if(x + static_objects[i].image.width >= 0 && x - static_objects[i].image.width <= canvas.width
-            && y + static_objects[i].image.height >= 0 && y - static_objects[i].image.height <= canvas.height)
+        if(static_objects[i].visible)
         {
-            drawRotatedImage(static_objects[i].image, 0, x, y);
+            x = canvas.width / 2 - (ships[player].x - static_objects[i].x);
+            y = canvas.height / 2 - (ships[player].y - static_objects[i].y);
+
+            if (x + static_objects[i].image.width >= 0 && x - static_objects[i].image.width <= canvas.width
+                && y + static_objects[i].image.height >= 0 && y - static_objects[i].image.height <= canvas.height)
+            {
+                drawRotatedImage(static_objects[i].image, 0, x, y);
+            }
         }
     }
 
     for(i = 0; i < moveable_objects.length; ++i)
     {
-        x = canvas.width / 2 - (ships[player].x - moveable_objects[i].x);
-        y = canvas.height / 2 - (ships[player].y - moveable_objects[i].y);
-
-        if(x + moveable_objects[i].image.width >= 0 && x - moveable_objects[i].image.width <= canvas.width
-            && y + moveable_objects[i].image.height >= 0 && y - moveable_objects[i].image.height <= canvas.height)
+        if(moveable_objects[i].visible)
         {
-            drawRotatedImage(moveable_objects[i].image, moveable_objects[i].angle, x, y);
+            x = canvas.width / 2 - (ships[player].x - moveable_objects[i].x);
+            y = canvas.height / 2 - (ships[player].y - moveable_objects[i].y);
+
+            if (x + moveable_objects[i].image.width >= 0 && x - moveable_objects[i].image.width <= canvas.width
+                && y + moveable_objects[i].image.height >= 0 && y - moveable_objects[i].image.height <= canvas.height)
+            {
+                drawRotatedImage(moveable_objects[i].image, moveable_objects[i].angle, x, y);
+            }
         }
     }
 
@@ -386,6 +449,11 @@ function draw()
     ctx.fillStyle = "#008800";
     ctx.font = "bold 40px sans-serif";
     ctx.fillText("" + parseInt(String(ships[player].hp)) + "/" + parseInt(String(ships[player].maxhp)), canvas.width, canvas.height - 50);
+
+    ctx.fillStyle = "#fff000";
+    ctx.font = "bold 30px sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("Money: " + parseInt(String(ships[player].money)), 0, 20);
 
     for(i = 0; i < ships[player].weapons.length; ++i)
     {
@@ -475,7 +543,8 @@ function change(index)
             'racing': ships[index].racing,
             'x': ships[index].x,
             'y': ships[index].y,
-            'hp': ships[player].hp,
+            'hp': ships[index].hp,
+            'money': ships[index].money,
         }));
 
     $.ajax({
@@ -489,7 +558,8 @@ function change(index)
             'racing': ships[index].racing,
             'x': ships[index].x,
             'y': ships[index].y,
-            'hp': ships[player].hp,
+            'hp': ships[index].hp,
+            'money': ships[index].money,
         },
         dataType: 'json',
         success: function (data) {
@@ -578,6 +648,10 @@ function dropShell(index)
 
 function changeObj(index)
 {
+    var visible = 0;
+    if(moveable_objects[index].visible === true)
+        visible = 1;
+
     if(socket.readyState !== 0)
     socket.send(JSON.stringify({
             'obj': 'move_obj',
@@ -589,6 +663,7 @@ function changeObj(index)
             'orbit_rotate': moveable_objects[player].orbit_rotate,
             'cx': moveable_objects[index].cx,
             'cy': moveable_objects[index].cy,
+            'visible': visible,
         }));
 
     $.ajax({
@@ -603,6 +678,38 @@ function changeObj(index)
             'orbit_rotate': moveable_objects[player].orbit_rotate,
             'cx': moveable_objects[index].cx,
             'cy': moveable_objects[index].cy,
+            'visible': visible,
+        },
+        dataType: 'json',
+        success: function (data) {
+            //console.log(data.flag);
+        }
+    });
+}
+
+function changeStaticObj(index)
+{
+    var visible = 0;
+    if(static_objects[index].visible === true)
+        visible = 1;
+
+    if(socket.readyState !== 0)
+    socket.send(JSON.stringify({
+        'obj': 'static_obj',
+        'obj_id': static_objects[index].id,
+            'x': static_objects[index].x,
+            'y': static_objects[index].y,
+            'visible': visible,
+    }));
+
+    $.ajax({
+        url: '/ajax/changeStaticObj/',
+        data: {
+            'game_id': game_id,
+            'obj_id': static_objects[index].id,
+            'x': static_objects[index].x,
+            'y': static_objects[index].y,
+            'visible': visible,
         },
         dataType: 'json',
         success: function (data) {

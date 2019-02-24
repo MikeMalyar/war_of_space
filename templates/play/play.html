@@ -36,6 +36,7 @@
                 var speed = '{{ ship.speed }}', angle = '{{ ship.angle }}';
                 var racing = '{{ ship.racing }}', rotate = '{{ ship.rotate }}', braking = '{{ ship.braking }}';
                 var hp = '{{ ship.hp }}', maxhp = '{{ ship.maxhp }}';
+                var money = '{{ ship.money }}';
                 var weapons = [];
 
                 {% for weapon in ship.weapons.all %}
@@ -49,7 +50,7 @@
                     weapons.push(w);
                 {% endfor %}
 
-                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), parseFloat(hp), parseInt(maxhp), weapons);
+                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), parseFloat(hp), parseInt(maxhp), parseInt(money), weapons);
                 ships.push(s);
             {% endfor %}
 
@@ -97,8 +98,18 @@
                 x = '{{ obj.x }}';
                 y = '{{ obj.y }}';
                 var title = '{{ obj.title }}';
+                var solid = false;
+                {% if obj.issolid %}
+                    solid = true;
+                {% endif %}
+                var money_plus = '{{ obj.money_plus }}';
+                var hp_plus = '{{ obj.hp_plus }}';
+                var visible = false;
+                {% if obj.visible %}
+                    visible = true;
+                {% endif %}
 
-                var obj = new StaticObject(parseInt(id), image, title, parseFloat(x), parseFloat(y));
+                var obj = new StaticObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), solid, parseInt(money_plus), parseInt(hp_plus), visible);
                 static_objects.push(obj);
             {% endfor %}
 
@@ -117,8 +128,18 @@
                 var cx = '{{ obj.cx }}';
                 var cy = '{{ obj.cy }}';
                 var orbit = '{{ obj.orbit_rotate }}';
+                solid = false;
+                {% if obj.issolid %}
+                    solid = true;
+                {% endif %}
+                visible = false;
+                {% if obj.visible %}
+                    visible = true;
+                {% endif %}
+                money_plus = '{{ obj.money_plus }}';
+                hp_plus = '{{ obj.hp_plus }}';
 
-                var obj = new MoveableObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), parseFloat(angle), parseFloat(rotate), parseFloat(cx), parseFloat(cy), parseFloat(orbit));
+                var obj = new MoveableObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), parseFloat(angle), parseFloat(rotate), parseFloat(cx), parseFloat(cy), parseFloat(orbit), solid, parseInt(money_plus), parseInt(hp_plus), visible);
                 moveable_objects.push(obj);
             {% endfor %}
 

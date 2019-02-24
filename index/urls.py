@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^ajax/dropShell/$', drop_shell, name='drop_shell'),
     url(r'^ajax/shoot/$', shoot, name='shoot'),
     url(r'^ajax/changeObj/$', change_obj, name='change_obj'),
+    url(r'^ajax/changeStaticObj/$', change_static_obj, name='change_static_obj'),
     url(r'^ajax/chooseShip/$', choose_ship, name='choose_ship'),
     url(r'^ajax/buyShip/$', buy_ship, name='buy_ship'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

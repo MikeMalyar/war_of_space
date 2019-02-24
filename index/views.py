@@ -79,7 +79,7 @@ def start(request, game_id):
                 if i % small_objects.count() == j:
                     if random.randint(0, 100) <= 99 - this_game.map.move_percent:  # == 0
                         gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
-                                                              isgameobject=True)
+                                                              isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                         gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                         gameobj.save()
@@ -87,7 +87,7 @@ def start(request, game_id):
                         this_game.static_objects.add(gameobj)
                     else:
                         gameobj = GameMoveableObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
-                                                                  isgameobject=True)
+                                                                  isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                         gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                         gameobj.angle = random.randint(0, 360)
@@ -142,6 +142,17 @@ def start(request, game_id):
 def finish(request, game_id):
     this_game = Game.objects.get(id=game_id)
 
+    i = 0
+    for p in this_game.players.all():
+        j = 0
+        for s in this_game.ships.all():
+            if i == j:
+                p.money += s.money
+                p.save()
+                break
+            j += 1
+        i += 1
+
     if this_game.started and not this_game.finished:
         for gameship in this_game.ships.get_queryset():
             gameship.delete()
@@ -187,6 +198,7 @@ def change(request):
     x = request.GET.get("x", None)
     y = request.GET.get("y", None)
     hp = request.GET.get("hp", None)
+    money = request.GET.get("money", None)
 
     ship.speed = speed
     ship.angle = angle
@@ -195,6 +207,7 @@ def change(request):
     ship.x = x
     ship.y = y
     ship.hp = hp
+    ship.money = money
 
     ship.save()
 
@@ -297,6 +310,7 @@ def change_obj(request):
     cx = request.GET.get("cx", None)
     cy = request.GET.get("cy", None)
     orbit_rotate = request.GET.get("orbit_rotate", None)
+    visible = request.GET.get("visible", None)
 
     obj.orbit_rotate = orbit_rotate
     obj.angle = angle
@@ -305,6 +319,36 @@ def change_obj(request):
     obj.y = y
     obj.cx = cx
     obj.cy = cy
+    if visible == 1:
+        obj.visible = True
+    else:
+        obj.visible = False
+
+    obj.save()
+
+    data = {
+
+    }
+    return JsonResponse(data)
+
+
+def change_static_obj(request):
+    obj_id = request.GET.get("obj_id", None)
+    game_id = request.GET.get("game_id", None)
+    this_game = Game.objects.get(id=game_id)
+    obj = this_game.static_objects.get(id=obj_id)
+
+    x = request.GET.get("x", None)
+    y = request.GET.get("y", None)
+    visible = request.GET.get("visible", None)
+
+    obj.x = x
+    obj.y = y
+
+    if visible == 1:
+        obj.visible = True
+    else:
+        obj.visible = False
 
     obj.save()
 
