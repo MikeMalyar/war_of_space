@@ -47,6 +47,7 @@ class StaticObject(models.Model):
     money_plus = models.IntegerField(default=0)
     hp_plus = models.IntegerField(default=0)
     visible = models.BooleanField(default=True)
+    weapon = models.ForeignKey(Weapon, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

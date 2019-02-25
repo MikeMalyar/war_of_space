@@ -108,9 +108,13 @@
                 {% if obj.visible %}
                     visible = true;
                 {% endif %}
+                var weapon_id = null;
+                {% if obj.weapon is not None %}
+                    weapon_id = parseInt('{{ obj.weapon.id }}');
+                {% endif %}
 
-                var obj = new StaticObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), solid, parseInt(money_plus), parseInt(hp_plus), visible);
-                static_objects.push(obj);
+                var obj1 = new StaticObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), solid, parseInt(money_plus), parseInt(hp_plus), visible, weapon_id);
+                static_objects.push(obj1);
             {% endfor %}
 
             var moveable_objects = [];
@@ -138,12 +142,29 @@
                 {% endif %}
                 money_plus = '{{ obj.money_plus }}';
                 hp_plus = '{{ obj.hp_plus }}';
+                weapon_id = null;
+                {% if obj.weapon is not None %}
+                    weapon_id = parseInt('{{ obj.weapon.id }}');
+                {% endif %}
 
-                var obj = new MoveableObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), parseFloat(angle), parseFloat(rotate), parseFloat(cx), parseFloat(cy), parseFloat(orbit), solid, parseInt(money_plus), parseInt(hp_plus), visible);
-                moveable_objects.push(obj);
+                var obj2 = new MoveableObject(parseInt(id), image, title, parseFloat(x), parseFloat(y), parseFloat(angle), parseFloat(rotate), parseFloat(cx), parseFloat(cy), parseFloat(orbit), solid, parseInt(money_plus), parseInt(hp_plus), visible, weapon_id);
+                moveable_objects.push(obj2);
             {% endfor %}
 
-            init(map, ships, shells, static_objects, moveable_objects, index, parseInt('{{ game.id }}'), images);
+            var weapons_list = [];
+
+            {% for w in weapons %}
+                id = '{{ w.id }}';
+                url = '{{ w.image.url }}';
+                image = document.createElement("IMG");
+                image.src = url;
+                title = '{{ w.title }}';
+
+                var weapon = new Weapon(parseInt(id), image, title);
+                weapons_list.push(weapon);
+            {% endfor %}
+
+            init(map, ships, shells, static_objects, moveable_objects, weapons_list, index, parseInt('{{ game.id }}'), images);
         }
     </script>
 

@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 
+import math
+
 from .models import Player, Game, GameShip, Ship, Map, MyImage, Weapon, Shell, GameShell, StaticObject, GameStaticObject, GameMoveableObject
 
 
@@ -64,9 +66,15 @@ def start(request, game_id):
         for player in this_game.players.get_queryset():
             ship = player.ships.get(id=player.ship_id)
 
-            gameship = GameShip.objects.create(image=ship.image, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, maxhp=ship.maxhp, hp=ship.maxhp, isgameship=True)
+            gameship = GameShip.objects.create(image=ship.image, title=ship.title, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, maxhp=ship.maxhp, hp=ship.maxhp, isgameship=True)
+
+            gameship.x = -math.sin(2 * math.pi / this_game.players.count()) * -100
+            gameship.y = math.cos(2 * math.pi / this_game.players.count()) * -100
+            gameship.angle = 360 / this_game.players.count()
+
             weapons = list(ship.def_weapons.all())
             gameship.weapons.add(*weapons)
+            gameship.save()
             this_game.ships.add(gameship)
 
         import random
@@ -79,7 +87,7 @@ def start(request, game_id):
                 if i % small_objects.count() == j:
                     if random.randint(0, 100) <= 99 - this_game.map.move_percent:  # == 0
                         gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
-                                                              isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus)
+                                                              isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus, weapon=obj.weapon)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                         gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                         gameobj.save()
@@ -87,7 +95,7 @@ def start(request, game_id):
                         this_game.static_objects.add(gameobj)
                     else:
                         gameobj = GameMoveableObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
-                                                                  isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus)
+                                                                  isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus, weapon=obj.weapon)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                         gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                         gameobj.angle = random.randint(0, 360)
@@ -108,7 +116,7 @@ def start(request, game_id):
             for obj in medium_objects.all():
                 if i % medium_objects.count() == j:
 
-                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size, isgameobject=True)
+                    gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size, isgameobject=True, weapon=obj.weapon)
                     gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                     gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                     gameobj.save()
@@ -124,7 +132,7 @@ def start(request, game_id):
             for obj in large_objects.all():
                 if i % large_objects.count() == j:
                     gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
-                                                              isgameobject=True)
+                                                              isgameobject=True, weapon=obj.weapon)
                     gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
                     gameobj.y = random.randint(-this_game.map.height / 2, this_game.map.height / 2)
                     gameobj.save()
@@ -182,7 +190,28 @@ def play(request, game_id):
         this_index += 1
     current = MyImage.objects.get(title="Current").image
 
-    return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index, 'current': current})
+    weapons = []
+    for obj in this_game.static_objects.all():
+        if obj.weapon is not None:
+            flag = True
+            for w in weapons:
+                if w.id == obj.weapon.id:
+                    flag = False
+                    break
+            if flag:
+                weapons.append(obj.weapon)
+
+    for obj in this_game.moveable_objects.all():
+        if obj.weapon is not None:
+            flag = True
+            for w in weapons:
+                if w.id == obj.weapon.id:
+                    flag = False
+                    break
+            if flag:
+                weapons.append(obj.weapon)
+
+    return render(request, 'play/play.html', {'game': this_game, 'player': player, 'index': this_index, 'current': current, 'weapons': weapons})
 
 
 def change(request):
@@ -400,7 +429,9 @@ def buy_ship(request):
     player = Player.objects.get(id=player_id)
     ship = Ship.objects.get(id=ship_id)
 
-    new_ship = Ship.objects.create(ship)
+    new_ship = Ship.objects.create(image=ship.image, title=ship.title, rotate=ship.rotate, racing=ship.racing, braking=ship.braking, maxhp=ship.maxhp, cost=ship.cost)
+    weapons = list(ship.def_weapons.all())
+    new_ship.def_weapons.add(*weapons)
     new_ship.isdefault = False
     new_ship.save()
 

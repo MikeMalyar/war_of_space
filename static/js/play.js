@@ -7,6 +7,7 @@ var ships = [];
 var shells = [];
 var static_objects = [];
 var moveable_objects = [];
+var weapons = [];
 var images = null;
 var map = null;
 var player = 0;
@@ -17,7 +18,7 @@ var flag = true;
 
 var socket = null;
 
-function StaticObject(id, image, title, x, y, solid, money, hp, visible)
+function StaticObject(id, image, title, x, y, solid, money, hp, visible, weapon_id)
 {
     this.id = id;
     this.image = image;
@@ -29,9 +30,10 @@ function StaticObject(id, image, title, x, y, solid, money, hp, visible)
     this.money = money;
     this.hp = hp;
     this.visible = visible;
+    this.weapon_id = weapon_id;
 }
 
-function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rotate, solid, money, hp, visible)
+function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rotate, solid, money, hp, visible, weapon_id)
 {
     this.id = id;
     this.image = image;
@@ -47,6 +49,7 @@ function MoveableObject(id, image, title, x, y, angle, rotate, cx, cy, orbit_rot
     this.money = money;
     this.hp = hp;
     this.visible = visible;
+    this.weapon_id = weapon_id;
 
     this.orbit = function () {
         var x1 = (this.x - this.cx) * Math.cos(this.orbit_rotate / 180 * Math.PI) - (this.y - this.cy) * Math.sin(this.orbit_rotate / 180 * Math.PI) + this.cx;
@@ -119,13 +122,14 @@ function Map(image)
     this.image = image;
 }
 
-function init(m, ships_list, shells_list, static_list, moveable_list, index, game, images_ob)
+function init(m, ships_list, shells_list, static_list, moveable_list, weapons_list, index, game, images_ob)
 {
     map = m;
     ships = ships_list;
     shells = shells_list;
     static_objects = static_list;
     moveable_objects = moveable_list;
+    weapons = weapons_list;
     player = index;
     game_id = game;
     images = images_ob;
@@ -311,6 +315,30 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
                     {
                         ships[player].money += static_objects[i].money;
                         ships[player].hp += static_objects[i].hp;
+
+                        if(static_objects[i].weapon_id !== null)
+                        {
+                            for(var j = 0;j < weapons.length; ++j)
+                            {
+                                if(weapons[j].id === static_objects[i].weapon_id)
+                                {
+                                    flag = true;
+                                    for(var k = 0; k < ships[player].weapons.length; ++k)
+                                    {
+                                        if(ships[player].weapons[k].id === weapons[j].id)
+                                        {
+                                            flag = false;
+                                            break;
+                                        }
+                                    }
+                                    if(flag)
+                                    {
+                                        ships[player].weapons.push(weapons[j]);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
 
                         static_objects[i].visible = false;
                         changeStaticObj(i);
