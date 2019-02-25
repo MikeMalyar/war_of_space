@@ -193,6 +193,14 @@ function init(m, ships_list, shells_list, static_list, moveable_list, index, gam
                     break;
                 }
             }
+            for(i = 0; i < ships.length; ++i)
+            {
+                if(data['ship_id'] === ships[i].id && i === player)
+                {
+                    flag = false;
+                    break;
+                }
+            }
 
             if(flag)
             {
@@ -587,10 +595,10 @@ function shoot()
 
            var shell = new Shell(data.id, parseInt(data.ship_id), image, data.speed, parseFloat(data.x), parseFloat(data.y), parseFloat(data.angle), parseInt(data.lifetime), parseFloat(data.time));
            shells.push(shell);
+
+           changeShell(shells.length - 1, false);
        }
     });
-
-    changeShell(shells.length - 1, false);
 }
 
 function changeShell(index, destroyed)

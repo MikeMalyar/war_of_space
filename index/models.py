@@ -35,6 +35,7 @@ class Weapon(models.Model):
     image = models.ImageField(null=True)
     title = models.CharField(max_length=40, default="The weapon")
     shell = models.ForeignKey(Shell, on_delete=models.CASCADE, null=True)
+    cost = models.IntegerField(default=1000)
 
 
 class StaticObject(models.Model):
@@ -76,6 +77,7 @@ class Ship(models.Model):
     def_weapons = models.ManyToManyField(Weapon)
     maxhp = models.IntegerField(default=100)
     cost = models.IntegerField(default=1000)
+    isdefault = models.BooleanField(default=True)
 
 
 class Player(models.Model):

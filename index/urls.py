@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^ajax/changeStaticObj/$', change_static_obj, name='change_static_obj'),
     url(r'^ajax/chooseShip/$', choose_ship, name='choose_ship'),
     url(r'^ajax/buyShip/$', buy_ship, name='buy_ship'),
+    url(r'^ajax/buyWeapon/$', buy_weapon, name='buy_weapon'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

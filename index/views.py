@@ -375,11 +375,22 @@ def shop(request):
     ships = []
 
     for ship in Ship.objects.all():
-        if not ship.isgameship:
+        if not ship.isgameship and ship.isdefault:
             if not player.ships.filter(id=ship.id).exists():
                 ships.append(ship)
 
-    return render(request, 'shop/shop.html', {'player': player, 'ships': ships})
+    weapons = []
+
+    for weapon in Weapon.objects.all():
+        flag = True
+        for ship in player.ships.all():
+            if ship.def_weapons.filter(id=weapon.id).exists():
+                flag = False
+                break
+        if flag:
+            weapons.append(weapon)
+
+    return render(request, 'shop/shop.html', {'player': player, 'ships': ships, 'weapons': weapons})
 
 
 def buy_ship(request):
@@ -389,10 +400,32 @@ def buy_ship(request):
     player = Player.objects.get(id=player_id)
     ship = Ship.objects.get(id=ship_id)
 
-    player.ships.add(ship)
+    new_ship = Ship.objects.create(ship)
+    new_ship.isdefault = False
+    new_ship.save()
+
+    player.ships.add(new_ship)
 
     player.money -= ship.cost
 
     player.save()
 
-    return JsonResponse({})
+    return JsonResponse({'money': player.money})
+
+
+def buy_weapon(request):
+    player_id = request.GET.get("player_id", None)
+    weapon_id = request.GET.get("weapon_id", None)
+
+    player = Player.objects.get(id=player_id)
+    weapon = Weapon.objects.get(id=weapon_id)
+
+    for ship in player.ships.all():
+        ship.def_weapons.add(weapon)
+        ship.save()
+
+    player.money -= weapon.cost * player.ships.count()
+
+    player.save()
+
+    return JsonResponse({'money': player.money})

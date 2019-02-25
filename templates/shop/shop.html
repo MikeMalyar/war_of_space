@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
+{% load filters %}
+
 {% block main %}
+
+    <h5>Available ships to buy</h5>
+
+    <p id="money">Money: {{ player.money }}</p>
 
     <form class="game">
     {% for ship in ships %}
@@ -21,6 +27,40 @@
                     dataType: 'json',
                     success: function (data) {
                         document.getElementById('{{ ship.id }}').remove();
+                        document.getElementById('money').innerHTML = 'Money: ' + data['money'];
+                    }
+                });
+            }" value="Buy">
+            {% else %}
+                <p>You don't have such money</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+    </form>
+    <br>
+
+    <h5>Available weapons to buy</h5>
+
+    <form class="game">
+    {% for weapon in weapons %}
+        <div id = "{{ weapon.id }}" style="background:#202020">
+            <p>{{ weapon.title }}</p>
+            <img src="{{ weapon.image.url }}" align="left">
+
+            <p>Cost: {{ weapon.cost|mult:player.ships.count }}</p>
+
+            {% if player.money >= weapon.cost|mult:player.ships.count %}
+            <input type="button" onclick="{
+                $.ajax({
+                    url: '/ajax/buyWeapon/',
+                    data: {
+                    'player_id': {{ player.id }},
+                    'weapon_id': {{ weapon.id }},
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        document.getElementById('{{ weapon.id }}').remove();
+                        document.getElementById('money').innerHTML = 'Money: ' + data['money'];
                     }
                 });
             }" value="Buy">
