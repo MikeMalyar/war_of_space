@@ -36,6 +36,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'y': text_data_json['y'],
                 'hp': text_data_json['hp'],
                 'money': text_data_json['money'],
+                'frags': text_data_json['frags'],
+                'visible': text_data_json['visible'],
             }
 
         if text_data_json['obj'] == 'shell':
@@ -93,6 +95,8 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'y': event['y'],
             'hp': event['hp'],
             'money': event['money'],
+            'frags': event['frags'],
+            'visible': event['visible'],
         }))
 
     async def shell(self, event):

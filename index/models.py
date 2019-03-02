@@ -99,6 +99,8 @@ class GameShip(Ship):
     weapons = models.ManyToManyField(Weapon)
     hp = models.FloatField(default=100)
     money = models.IntegerField(default=0)
+    frags = models.IntegerField(default=0)
+    visible = models.BooleanField(default=True)
 
 
 class Game(models.Model):
@@ -108,6 +110,7 @@ class Game(models.Model):
     quantity = models.IntegerField(default=4)
     started = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
+    max_frags = models.IntegerField(default=10)
 
     ships = models.ManyToManyField(GameShip)
     shells = models.ManyToManyField(GameShell)

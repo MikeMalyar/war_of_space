@@ -44,11 +44,12 @@ def add(request):
     if request.POST:
         name = request.POST.get('name')
         quantity = request.POST.get('quantity')
+        frags = request.POST.get('frags')
         player = Player.objects.get(user=request.user)
         map_id = request.POST.get('map')
         this_map = Map.objects.get(id=map_id)
 
-        Game.objects.create(title=name, quantity=quantity, map=this_map)
+        Game.objects.create(title=name, quantity=quantity, map=this_map, max_frags=frags)
 
         this_game = Game.objects.last()
 
@@ -228,6 +229,8 @@ def change(request):
     y = request.GET.get("y", None)
     hp = request.GET.get("hp", None)
     money = request.GET.get("money", None)
+    frags = request.GET.get("frags", None)
+    visible = request.GET.get("visible", None)
 
     ship.speed = speed
     ship.angle = angle
@@ -237,6 +240,12 @@ def change(request):
     ship.y = y
     ship.hp = hp
     ship.money = money
+    ship.frags = frags
+
+    if visible == 1:
+        ship.visible = True
+    else:
+        ship.visible = False
 
     ship.save()
 

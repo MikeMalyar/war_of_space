@@ -5,7 +5,8 @@
     <form action="{% url 'add' %}" method="post" class="game">
         {% csrf_token %}
         <input type="text" name="name" required placeholder="Title">
-        <input type="number" name="quantity" required value="2" placeholder="Quantity"> <br>
+        <input type="number" name="quantity" required placeholder="Quantity"> <br>
+        <input type="number" name="frags" required placeholder="Frags"> <br>
 
         <select name="map" required>
             {% for map in maps %}

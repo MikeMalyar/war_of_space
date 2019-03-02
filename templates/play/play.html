@@ -37,6 +37,11 @@
                 var racing = '{{ ship.racing }}', rotate = '{{ ship.rotate }}', braking = '{{ ship.braking }}';
                 var hp = '{{ ship.hp }}', maxhp = '{{ ship.maxhp }}';
                 var money = '{{ ship.money }}';
+                var frags = '{{ ship.frags }}';
+                var visible = false;
+                {% if ship.visible %}
+                    visible = true;
+                {% endif %}
                 var weapons = [];
 
                 {% for weapon in ship.weapons.all %}
@@ -50,7 +55,7 @@
                     weapons.push(w);
                 {% endfor %}
 
-                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), parseFloat(hp), parseInt(maxhp), parseInt(money), weapons);
+                var s = new Ship(parseInt(id), image, parseFloat(racing), parseFloat(braking), parseFloat(speed), parseFloat(rotate), parseFloat(angle), parseFloat(x), parseFloat(y), parseFloat(hp), parseInt(maxhp), parseInt(money), parseInt(frags), visible, weapons);
                 ships.push(s);
             {% endfor %}
 
@@ -104,7 +109,7 @@
                 {% endif %}
                 var money_plus = '{{ obj.money_plus }}';
                 var hp_plus = '{{ obj.hp_plus }}';
-                var visible = false;
+                visible = false;
                 {% if obj.visible %}
                     visible = true;
                 {% endif %}
@@ -164,7 +169,7 @@
                 weapons_list.push(weapon);
             {% endfor %}
 
-            init(map, ships, shells, static_objects, moveable_objects, weapons_list, index, parseInt('{{ game.id }}'), images);
+            init(map, ships, shells, static_objects, moveable_objects, weapons_list, index, parseInt('{{ game.id }}'), parseInt('{{ game.max_frags }}'), images);
         }
     </script>
 
