@@ -296,6 +296,13 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                             if(checkCollision(ships[j], shells[i]))
                             {
                                 ships[j].hp -= 10;
+
+                                if(ships[j].hp <= 0)
+                                {
+                                    ships[player].frags += 1;
+                                    ships[j].visible = false;
+                                }
+
                                 change(j);
 
                                 shells[i].time += shells[i].lifetime;
@@ -342,8 +349,17 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                 {
                     if(checkCollision(ships[i], ships[player]))
                     {
-
+                        ships[i].hp = 0;
+                        ships[i].visible = false;
+                        change[i];
+                        ships[player].hp = 0;
                     }
+                }
+
+                if(ships[i].frags >= max_frags)
+                {
+                   flag = false;
+                   window.location.href = "/games/" + game_id + "/finish";
                 }
             }
             for(i = 0; i < static_objects.length; ++i)

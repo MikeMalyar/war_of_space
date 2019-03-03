@@ -151,18 +151,22 @@ def start(request, game_id):
 def finish(request, game_id):
     this_game = Game.objects.get(id=game_id)
 
-    i = 0
-    for p in this_game.players.all():
-        j = 0
-        for s in this_game.ships.all():
-            if i == j:
-                p.money += s.money
-                p.save()
-                break
-            j += 1
-        i += 1
+    ships = list(this_game.ships.all())
+    players = list(this_game.players.all())
 
     if this_game.started and not this_game.finished:
+
+        i = 0
+        for p in this_game.players.all():
+            j = 0
+            for s in this_game.ships.all():
+                if i == j:
+                    p.money += s.money
+                    p.save()
+                    break
+                j += 1
+            i += 1
+
         for gameship in this_game.ships.get_queryset():
             gameship.delete()
 
@@ -178,7 +182,7 @@ def finish(request, game_id):
         this_game.finished = True
         this_game.save()
 
-    return HttpResponseRedirect(reverse('games'))
+    return render(request, 'game/results.html', {'game': this_game, 'ships': ships, 'players': players})
 
 
 def play(request, game_id):
