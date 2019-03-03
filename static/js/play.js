@@ -289,7 +289,41 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                     shells[i].time += interval / 1000.0;
                     changeShell(i, false);
 
-                    //check collisions
+                    for(j = 0; j < ships.length; ++j)
+                    {
+                        if(j !== player && ships[j].visible === true)
+                        {
+                            if(checkCollision(ships[j], shells[i]))
+                            {
+                                ships[j].hp -= 10;
+                                change(j);
+
+                                shells[i].time += shells[i].lifetime;
+                            }
+                        }
+                    }
+
+                    for(j = 0; j < static_objects.length; ++j)
+                    {
+                        if(static_objects[j].visible === true && static_objects[j].solid === true)
+                        {
+                            if(checkCollision(static_objects[j], shells[i]))
+                            {
+                                shells[i].time += shells[i].lifetime;
+                            }
+                        }
+                    }
+
+                    for(j = 0; j < moveable_objects.length; ++j)
+                    {
+                        if(moveable_objects[j].visible === true && moveable_objects[j].solid === true)
+                        {
+                            if(checkCollision(moveable_objects[j], shells[i]))
+                            {
+                                shells[i].time += shells[i].lifetime;
+                            }
+                        }
+                    }
 
                     if(shells[i].time > shells[i].lifetime)
                     {
