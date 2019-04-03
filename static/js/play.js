@@ -185,7 +185,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
             var flag = true;
             for (i = 0; i < shells.length; ++i)
             {
-                if (shells[i].id === shell_id)
+                if (shells[i].id === shell_id && shells[i].ship_id !== player)
                 {
                     shells[i].ship_id = data['ship_id'];
                     shells[i].speed = data['speed'];
@@ -480,7 +480,8 @@ function drawRotatedImage(image, angle, x, y)
 
 function draw()
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     drawRotatedImage(map.image, 0, canvas.width / 2 - ships[player].x, canvas.height / 2 - ships[player].y);
 

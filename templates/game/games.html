@@ -6,17 +6,29 @@
 
     <h3>Available games</h3>
 
-    <ul>
+    <table width="80%" class="table table-dark table-bordered table-hover">
     {% for game in games %}
         {% if not game.finished %}
-            <li>
-                <a href="/games/{{ game.id }}"> <p>Title: {{ game.title }}</p> </a>
-                <img src="{{ game.map.image.url }}" width="100" height="50" align="left">
-                <p> Map: {{ game.map.title }} <br> Creator: {{ game.players.first }} <br> Frags: {{ game.max_frags }}</p>
+            <tr>
+                <td>
+                    <p><a href="/games/{{ game.id }}">Title: {{ game.title }}</a></p>
+                </td>
+                <td>
+                    <img src="{{ game.map.image.url }}" width="100" height="50" align="left">
+                </td>
+                <td>
+                    <p>Map: {{ game.map.title }}</p>
+                </td>
+                <td>
+                    <p>Creator: {{ game.players.first }}</p>
+                </td>
+                <td>
+                    <p>Frags: {{ game.max_frags }}</p>
+                </td>
 
-            </li>
+            </tr>
         {% endif %}
     {% endfor %}
-    </ul>
+    </table>
 
 {% endblock %}
