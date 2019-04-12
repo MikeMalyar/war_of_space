@@ -11,6 +11,7 @@ var weapons = [];
 var images = null;
 var map = null;
 var player = 0;
+var time = 0;
 var game_id = 0;
 var max_frags = 0;
 var curr_weap = 0;
@@ -185,8 +186,19 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
             var flag = true;
             for (i = 0; i < shells.length; ++i)
             {
-                if (shells[i].id === shell_id && shells[i].ship_id !== player)
+                var flag1 = true;
+                for(var j = 0; j < ships.length; ++j) {
+                    if(ships[j].id === shells[i].ship_id) {
+                        if(j === player) {
+                            flag1 = false;
+                            break;
+                        }
+                        break;
+                    }
+                }
+                if (shells[i].id === shell_id && flag1)
                 {
+                    console.log("hello");
                     shells[i].ship_id = data['ship_id'];
                     shells[i].speed = data['speed'];
                     shells[i].angle = data['angle'];
@@ -214,11 +226,14 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                     break;
                 }
             }
-
+            console.log('my flag ' + flag);
             if(flag)
             {
                 var image = document.createElement("IMG");
                 image.src = data['image'];
+                image.onload=function(){
+                    console.log('hello stas');
+                };
 
                 shells.push(new Shell(shell_id, data['ship_id'], image, data['speed'], data['x'], data['y'], data['angle'], data['lifetime'], data['time']));
 
@@ -281,6 +296,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
     {
         if (flag)
         {
+            time += interval;
             for(var i = 0; i < shells.length; ++i)
             {
                 if(shells[i].ship_id === ships[player].id)
@@ -471,11 +487,11 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
 
 function drawRotatedImage(image, angle, x, y)
 {
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(angle / 180 * Math.PI);
-    ctx.drawImage(image, -image.width / 2, -image.height / 2);
-    ctx.restore();
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle / 180 * Math.PI);
+        ctx.drawImage(image, -image.width / 2, -image.height / 2);
+        ctx.restore();
 }
 
 function draw()
@@ -634,7 +650,12 @@ document.addEventListener('keydown',
                 changeWeapon(-1);
                 break;
             case 32:
-                shoot();
+                console.log(time);
+                if(time > 1000) {
+                    shoot();
+                    time = 0;
+                }
+
                 break;
             case 82:
                 if(ships[player].visible === false)

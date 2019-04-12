@@ -86,7 +86,7 @@ def start(request, game_id):
             j = 0
             for obj in small_objects.all():
                 if i % small_objects.count() == j:
-                    if random.randint(0, 1) <= 99 - this_game.map.move_percent: # (0, 100)
+                    if random.randint(0, 100) < 99 - this_game.map.move_percent: # (0, 100)
                         gameobj = GameStaticObject.objects.create(image=obj.image, title=obj.title, size=obj.size,
                                                               isgameobject=True, issolid=obj.issolid, money_plus=obj.money_plus, hp_plus=obj.hp_plus, weapon=obj.weapon)
                         gameobj.x = random.randint(-this_game.map.width / 2, this_game.map.width / 2)
