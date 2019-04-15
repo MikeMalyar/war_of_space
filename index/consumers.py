@@ -1,5 +1,8 @@
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
+
+from index.models import GameShell
 
 
 class PlayConsumer(AsyncWebsocketConsumer):
@@ -54,6 +57,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'time': text_data_json['time'],
                 'destroyed': text_data_json['destroyed'],
             }
+            await self.change_shell(info)
 
         if text_data_json['obj'] == 'move_obj':
             info = {
@@ -114,6 +118,22 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'time': event['time'],
             'destroyed': event['destroyed'],
         }))
+
+    @database_sync_to_async
+    async def change_shell(self, data):
+        shell_id = data['shell_id']
+
+        if GameShell.objects.filter(id=shell_id).exists():
+            shell = GameShell.objects.get(id=shell_id)
+
+            shell.speed = data['speed']
+            shell.angle = data['angle']
+            shell.x = data['x']
+            shell.y = data['y']
+            shell.lifetime = data['lifetime']
+            shell.time = data['time']
+
+            shell.save()
 
     async def move_obj(self, event):
 

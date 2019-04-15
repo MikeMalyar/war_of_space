@@ -793,23 +793,23 @@ function changeShell(index, destroyed)
             'destroyed': destroyed,
         }));
 
-    $.ajax({
-        url: '/ajax/changeShell/',
-        data: {
-            'game_id': game_id,
-            'shell_id': shells[index].id,
-            'speed': shells[index].speed,
-            'angle': shells[index].angle,
-            'x': shells[index].x,
-            'y': shells[index].y,
-            'lifetime': shells[index].lifetime,
-            'time': shells[index].time,
-        },
-        dataType: 'json',
-        success: function (data) {
-            //console.log(data.flag);
-        }
-    });
+    // $.ajax({
+    //     url: '/ajax/changeShell/',
+    //     data: {
+    //         'game_id': game_id,
+    //         'shell_id': shells[index].id,
+    //         'speed': shells[index].speed,
+    //         'angle': shells[index].angle,
+    //         'x': shells[index].x,
+    //         'y': shells[index].y,
+    //         'lifetime': shells[index].lifetime,
+    //         'time': shells[index].time,
+    //     },
+    //     dataType: 'json',
+    //     success: function (data) {
+    //         //console.log(data.flag);
+    //     }
+    // });
 }
 
 function dropShell(index)
