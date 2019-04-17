@@ -2,7 +2,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-from index.models import GameShell, GameShip
+from index.models import GameShell, GameShip, GameMoveableObject
 
 
 class PlayConsumer(AsyncWebsocketConsumer):
@@ -42,6 +42,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'frags': text_data_json['frags'],
                 'visible': text_data_json['visible'],
             }
+            await self.change_ship(info)
 
         if text_data_json['obj'] == 'shell':
             info = {
@@ -72,6 +73,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'orbit_rotate': text_data_json['orbit_rotate'],
                 'visible': text_data_json['visible'],
             }
+            await self.change_move_obj(info)
 
         if text_data_json['obj'] == 'static_obj':
             info = {
@@ -104,7 +106,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    async def change_ship(self, data):
+    def change_ship(self, data):
         ship_id = data["ship_id"]
 
         if GameShip.objects.filter(id=ship_id).exists():
@@ -121,7 +123,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
             ship.frags = data["frags"]
             visible = data["visible"]
 
-            if visible == '1':
+            if visible == 1:
                 ship.visible = True
             else:
                 ship.visible = False
@@ -145,7 +147,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
         }))
 
     @database_sync_to_async
-    async def change_shell(self, data):
+    def change_shell(self, data):
         shell_id = data['shell_id']
 
         if GameShell.objects.filter(id=shell_id).exists():
@@ -174,6 +176,28 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'orbit_rotate': event['orbit_rotate'],
             'visible': event['visible'],
         }))
+
+    @database_sync_to_async
+    def change_move_obj(self, data):
+        obj_id = data['obj_id']
+
+        if GameMoveableObject.objects.filter(id=obj_id).exists():
+            obj = GameMoveableObject.objects.get(id=obj_id)
+            visible = data["visible"]
+
+            obj.orbit_rotate = data['orbit_rotate']
+            obj.angle = data['angle']
+            obj.rotate = data['rotate']
+            obj.x = data['x']
+            obj.y = data['y']
+            obj.cx = data['cx']
+            obj.cy = data['cy']
+            if visible == 1:
+                obj.visible = True
+            else:
+                obj.visible = False
+
+            obj.save()
 
     async def static_obj(self, event):
 

@@ -118,6 +118,15 @@ function Ship(id, image, racing, braking, speed, rotate, angle, x, y, hp, maxhp,
 
         this.x += dx;
         this.y -= dy;
+
+        if(this.x > map.image.width / 2)
+            this.x = -map.image.width / 2;
+        if(this.y > map.image.height / 2)
+            this.y = -map.image.height / 2;
+        if(this.x < -map.image.width / 2)
+           this.x = map.image.width / 2;
+        if(this.y < -map.image.height / 2)
+           this.y = map.image.height / 2;
     }
 }
 
@@ -849,25 +858,25 @@ function changeObj(index)
             'visible': visible,
         }));
 
-    $.ajax({
-        url: '/ajax/changeObj/',
-        data: {
-            'game_id': game_id,
-            'obj_id': moveable_objects[index].id,
-            'angle': moveable_objects[index].angle,
-            'rotate': moveable_objects[index].rotate,
-            'x': moveable_objects[index].x,
-            'y': moveable_objects[index].y,
-            'orbit_rotate': moveable_objects[player].orbit_rotate,
-            'cx': moveable_objects[index].cx,
-            'cy': moveable_objects[index].cy,
-            'visible': visible,
-        },
-        dataType: 'json',
-        success: function (data) {
-            //console.log(data.flag);
-        }
-    });
+    // $.ajax({
+    //     url: '/ajax/changeObj/',
+    //     data: {
+    //         'game_id': game_id,
+    //         'obj_id': moveable_objects[index].id,
+    //         'angle': moveable_objects[index].angle,
+    //         'rotate': moveable_objects[index].rotate,
+    //         'x': moveable_objects[index].x,
+    //         'y': moveable_objects[index].y,
+    //         'orbit_rotate': moveable_objects[player].orbit_rotate,
+    //         'cx': moveable_objects[index].cx,
+    //         'cy': moveable_objects[index].cy,
+    //         'visible': visible,
+    //     },
+    //     dataType: 'json',
+    //     success: function (data) {
+    //         //console.log(data.flag);
+    //     }
+    // });
 }
 
 function changeStaticObj(index)
