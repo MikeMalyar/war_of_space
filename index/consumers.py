@@ -2,7 +2,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-from index.models import GameShell
+from index.models import GameShell, GameShip
 
 
 class PlayConsumer(AsyncWebsocketConsumer):
@@ -102,6 +102,31 @@ class PlayConsumer(AsyncWebsocketConsumer):
             'frags': event['frags'],
             'visible': event['visible'],
         }))
+
+    @database_sync_to_async
+    async def change_ship(self, data):
+        ship_id = data["ship_id"]
+
+        if GameShip.objects.filter(id=ship_id).exists():
+            ship = GameShip.objects.get(id=ship_id)
+
+            ship.speed = data["speed"]
+            ship.angle = data["angle"]
+            ship.rotate = data["rotate"]
+            ship.racing = data["racing"]
+            ship.x = data["x"]
+            ship.y = data["y"]
+            ship.hp = data["hp"]
+            ship.money = data["money"]
+            ship.frags = data["frags"]
+            visible = data["visible"]
+
+            if visible == '1':
+                ship.visible = True
+            else:
+                ship.visible = False
+
+            ship.save()
 
     async def shell(self, event):
 

@@ -728,27 +728,27 @@ function change(index)
             'visible': visible,
         }));
 
-    $.ajax({
-        url: '/ajax/change/',
-        data: {
-            'game_id': game_id,
-            'ship_id': ships[index].id,
-            'speed': ships[index].speed,
-            'angle': ships[index].angle,
-            'rotate': ships[index].rotate,
-            'racing': ships[index].racing,
-            'x': ships[index].x,
-            'y': ships[index].y,
-            'hp': ships[index].hp,
-            'money': ships[index].money,
-            'frags': ships[index].frags,
-            'visible': visible,
-        },
-        dataType: 'json',
-        success: function (data) {
-            //console.log(data.flag);
-        }
-    });
+    // $.ajax({
+    //     url: '/ajax/change/',
+    //     data: {
+    //         'game_id': game_id,
+    //         'ship_id': ships[index].id,
+    //         'speed': ships[index].speed,
+    //         'angle': ships[index].angle,
+    //         'rotate': ships[index].rotate,
+    //         'racing': ships[index].racing,
+    //         'x': ships[index].x,
+    //         'y': ships[index].y,
+    //         'hp': ships[index].hp,
+    //         'money': ships[index].money,
+    //         'frags': ships[index].frags,
+    //         'visible': visible,
+    //     },
+    //     dataType: 'json',
+    //     success: function (data) {
+    //         //console.log(data.flag);
+    //     }
+    // });
 }
 
 function shoot()
