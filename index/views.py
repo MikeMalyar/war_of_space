@@ -324,14 +324,9 @@ def change_shell(request):
 
 def drop_shell(request):
     shell_id = request.GET.get("shell_id", None)
-    game_id = request.GET.get("game_id", None)
-    this_game = Game.objects.get(id=game_id)
 
     if GameShell.objects.filter(id=shell_id).exists():
-        shell = GameShell.objects.get(id=shell_id)
-
-        this_game.shells.remove(shell)
-        shell.delete()
+        GameShell.objects.get(id=shell_id).delete()
 
     data = {
 

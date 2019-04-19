@@ -168,19 +168,24 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
             {
                 if (ships[i].id === ship_id && i !== player)
                 {
-                    ships[i].speed = data['speed'];
-                    ships[i].angle = data['angle'];
-                    ships[i].racing = data['racing'];
-                    ships[i].rotate = data['rotate'];
-                    ships[i].x = data['x'];
-                    ships[i].y = data['y'];
-                    ships[i].hp = data['hp'];
-                    ships[i].money = data['money'];
-                    ships[i].frags = data['frags'];
+                    if(data['speed'] !== 'null') {
+                        ships[i].speed = data['speed'];
+                        ships[i].angle = data['angle'];
+                        ships[i].racing = data['racing'];
+                        ships[i].rotate = data['rotate'];
+                        ships[i].x = data['x'];
+                        ships[i].y = data['y'];
+                        ships[i].money = data['money'];
+                    }
 
-                    ships[i].visible = false;
-                    if(data['visible'] === 1)
-                        ships[i].visible = true;
+                    if(data['hp'] !== 'null') {
+                        ships[i].hp = data['hp'];
+                        ships[i].frags = data['frags'];
+
+                        ships[i].visible = false;
+                        if (data['visible'] === 1)
+                            ships[i].visible = true;
+                    }
 
                     draw();
 
@@ -207,7 +212,6 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                 }
                 if (shells[i].id === shell_id && flag1)
                 {
-                    console.log("hello");
                     shells[i].ship_id = data['ship_id'];
                     shells[i].speed = data['speed'];
                     shells[i].angle = data['angle'];
@@ -235,13 +239,11 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                     break;
                 }
             }
-            console.log('my flag ' + flag);
             if(flag)
             {
                 var image = document.createElement("IMG");
                 image.src = data['image'];
                 image.onload=function(){
-                    console.log('hello stas');
                 };
 
                 shells.push(new Shell(shell_id, data['ship_id'], image, data['speed'], data['x'], data['y'], data['angle'], data['lifetime'], data['time']));
@@ -320,15 +322,15 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                         {
                             if(checkCollision(ships[j], shells[i]))
                             {
-                                ships[j].hp -= 10;
-
+                                ships[j].hp = ships[j].hp - 50;
+                                console.log('HP ' + ships[j].hp);
                                 if(ships[j].hp <= 0)
                                 {
                                     ships[player].frags += 1;
                                     ships[j].visible = false;
                                 }
 
-                                change(j);
+                                change(j, 'hp');
 
                                 shells[i].time += shells[i].lifetime;
                             }
@@ -376,7 +378,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                     {
                         ships[i].hp = 0;
                         ships[i].visible = false;
-                        change[i];
+                        change(i, 'hp');
                         ships[player].hp = 0;
                     }
                 }
@@ -396,6 +398,8 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                     {
                         ships[player].hp = 0;
                         ships[player].frags -= 1;
+
+                        change(player, 'hp');
                     }
                     else
                     {
@@ -458,7 +462,7 @@ function init(m, ships_list, shells_list, static_list, moveable_list, weapons_li
                 ships[player].visible = false;
             }
 
-            change(player);
+            change(player, 'move');
 
             for(i = 0; i < moveable_objects.length; ++i)
             {
@@ -635,19 +639,19 @@ document.addEventListener('keydown',
         switch (event.keyCode) {
             case 87:
                 ships[player].speed += ships[player].racing * interval / 1000.0;
-                change(player);
+                // change(player);
                 break;
             case 68:
                 ships[player].angle += ships[player].rotate * interval / 1000.0;
-                change(player);
+                // change(player);
                 break;
             case 83:
                 ships[player].speed -= ships[player].braking * interval / 1000.0;
-                change(player);
+                // change(player);
                 break;
             case 65:
                 ships[player].angle -= ships[player].rotate * interval / 1000.0;
-                change(player);
+                // change(player);
                 break;
             case 8:
                 flag = false;
@@ -659,7 +663,6 @@ document.addEventListener('keydown',
                 changeWeapon(-1);
                 break;
             case 32:
-                console.log(time);
                 if(time > 1000) {
                     shoot();
                     time = 0;
@@ -675,7 +678,7 @@ document.addEventListener('keydown',
                     ships[player].angle = getRandomInt(0, 360);
                     ships[player].speed = 0;
                     ships[player].visible = true;
-                    change(player);
+                    // change(player);
                 }
                 break;
         }
@@ -715,14 +718,15 @@ function changeWeapon(delta)
     draw();
 }
 
-function change(index)
+function change(index, type)
 {
     var visible = 0;
     if(ships[index].visible === true)
         visible = 1;
 
-    if(socket.readyState !== 0)
-    socket.send(JSON.stringify({
+    var value = {};
+    if(type === 'move') {
+        value = {
             'obj': 'ship',
             'ship_id': ships[index].id,
             'speed': ships[index].speed,
@@ -731,11 +735,31 @@ function change(index)
             'racing': ships[index].racing,
             'x': ships[index].x,
             'y': ships[index].y,
-            'hp': ships[index].hp,
+            'hp': 'null',
             'money': ships[index].money,
+            'frags': 'null',
+            'visible': 'null',
+        }
+    }
+    if(type === 'hp') {
+        value = {
+            'obj': 'ship',
+            'ship_id': ships[index].id,
+            'speed': 'null',
+            'angle': 'null',
+            'rotate': 'null',
+            'racing': 'null',
+            'x': 'null',
+            'y': 'null',
+            'hp': ships[index].hp,
+            'money': 'null',
             'frags': ships[index].frags,
             'visible': visible,
-        }));
+        }
+    }
+
+    if(socket.readyState !== 0)
+    socket.send(JSON.stringify(value));
 
     // $.ajax({
     //     url: '/ajax/change/',

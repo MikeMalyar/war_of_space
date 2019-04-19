@@ -42,6 +42,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
                 'frags': text_data_json['frags'],
                 'visible': text_data_json['visible'],
             }
+            # print(info['hp'])
             await self.change_ship(info)
 
         if text_data_json['obj'] == 'shell':
@@ -112,21 +113,24 @@ class PlayConsumer(AsyncWebsocketConsumer):
         if GameShip.objects.filter(id=ship_id).exists():
             ship = GameShip.objects.get(id=ship_id)
 
-            ship.speed = data["speed"]
-            ship.angle = data["angle"]
-            ship.rotate = data["rotate"]
-            ship.racing = data["racing"]
-            ship.x = data["x"]
-            ship.y = data["y"]
-            ship.hp = data["hp"]
-            ship.money = data["money"]
-            ship.frags = data["frags"]
-            visible = data["visible"]
+            print(data['speed'])
+            if data['speed'] != 'null':
+                ship.speed = data["speed"]
+                ship.angle = data["angle"]
+                ship.rotate = data["rotate"]
+                ship.racing = data["racing"]
+                ship.x = data["x"]
+                ship.y = data["y"]
+                ship.money = data["money"]
+            if data['hp'] != 'null':
+                ship.hp = data['hp']
+                ship.frags = data["frags"]
+                visible = data["visible"]
 
-            if visible == 1:
-                ship.visible = True
-            else:
-                ship.visible = False
+                if visible == 1:
+                    ship.visible = True
+                else:
+                    ship.visible = False
 
             ship.save()
 
@@ -150,7 +154,7 @@ class PlayConsumer(AsyncWebsocketConsumer):
     def change_shell(self, data):
         shell_id = data['shell_id']
 
-        if GameShell.objects.filter(id=shell_id).exists():
+        if GameShell.objects.all().filter(id=shell_id).exists():
             shell = GameShell.objects.get(id=shell_id)
 
             shell.speed = data['speed']
