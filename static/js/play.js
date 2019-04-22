@@ -678,7 +678,7 @@ document.addEventListener('keydown',
                     ships[player].angle = getRandomInt(0, 360);
                     ships[player].speed = 0;
                     ships[player].visible = true;
-                    // change(player);
+                    change(player, 'hp');
                 }
                 break;
         }
